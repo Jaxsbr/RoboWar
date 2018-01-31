@@ -314,7 +314,7 @@ $.LoadImages = function () {
 
     $.SpeedBoostImage = new Image();
     $.SpeedBoostImage.onload = function () { $.ImagesLoaded++; }
-    $.SpeedBoostImage.src = "img/speedBoost.png";
+    $.SpeedBoostImage.src = "img/speedboost.png";
 
     $.HpUpImage = new Image();
     $.HpUpImage.onload = function () { $.ImagesLoaded++; }
