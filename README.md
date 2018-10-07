@@ -16,11 +16,25 @@ This game was fun to play in a prototype phase and thus will become 2.0.
 - [ ] Score Tracking (Azure + Twitter post)
 
 ### Improve graphics
+- [ ] Concept a prototype (Produce games colour pallet)
+- [ ] Remaster terrait (Robot Graveyard)
+- [ ] Remaster all animations
+- [ ] Rework partical effects
 
 ### Add music
+- [ ] Aquire free cowboy style music for back track
+- [ ] Add sounds to game actions (shoot, melee, power-up, round counter, boss rounds)
 
 ### Progressive player abilities
+- [ ] Implement player stats (speed, bullets p/s, health)
+- [ ] Implement stats mature by level (player gets boosts in stats)
 
 ### Menu Rework
+- [ ] Welcome page (cookie notification)
+- [ ] Score graph page (show player improvement over time)
+- [ ] Leader board page (shows your personal best time against a score board)
+- [ ] Mini map improvements (size, animations, decoration)
 
-### Score Tracking (Azure + Twitter post)
+### Score Tracking (Azure)
+- [ ] Score persist (Azure storage else cookie)
+- [ ] Learder board
