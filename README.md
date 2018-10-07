@@ -10,11 +10,11 @@ Version 2 of Robo War will incorporate cloud technology to assist with score tra
 
 
 ### Todo
-- [] Improve graphics
-- [] Add music
-- [] Progressive player abilities
-- [] Menu Rework
-- [] Score Tracking (Azure + Twitter post)
+- [ ] Improve graphics
+- [ ] Add music
+- [ ] Progressive player abilities
+- [ ] Menu Rework
+- [ ] Score Tracking (Azure + Twitter post)
 
 ### Improve graphics
 
