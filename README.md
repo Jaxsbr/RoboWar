@@ -38,3 +38,9 @@ This game was fun to play in a prototype phase and thus will become 2.0.
 ### Score Tracking (Azure)
 - [ ] Score persist (Azure storage else cookie)
 - [ ] Learder board
+
+### Feature Prototype - Improved terrain
+- [ ] Implement collidable bomb spawning section (player and enemy hazard)
+- [ ] Water terrain mechanic (water slows player)
+- [ ] Art: Add particles (electric cloud/strands with water contact)
+- [ ] Sound: Sound of shorting electrics
