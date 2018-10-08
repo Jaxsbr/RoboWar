@@ -20,6 +20,8 @@ $.Player = function () {
     this.SetupPowerUpTimers();
     this.CurrentTile = null;
     this.SetupAnimations();
+
+    this.ShootSound = new $.Sound('sounds/shoot1.mp3', 3);
 };
 
 
@@ -148,6 +150,7 @@ $.Player.prototype.ShootBullet = function () {
     }
 
     $.Score.BulletsFired += shots;    
+    this.ShootSound.Play();
 };
 
 $.Player.prototype.MeleeHit = function (dp) {
