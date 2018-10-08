@@ -17,7 +17,7 @@ This game was fun to play in a prototype phase and thus will become a 2.0 projec
 
 ### Improve graphics
 - [ ] Concept a prototype (Produce games colour pallet)
-- [ ] Remaster terrait (Robot Graveyard)
+- [ ] Remaster terrain (Robot Graveyard)
 - [ ] Remaster all animations
 - [ ] Rework partical effects
 
