@@ -5,6 +5,7 @@ $.WaveEngine = function (gameWorld) {
 
     this.WaitTick = 10;
     this.WaitTime = this.WaitTick;
+    this.ToneSound = new $.Sound('sounds/tone1.mp3', 1);
 };
 
 $.WaveEngine.prototype.Update = function () {
@@ -20,6 +21,7 @@ $.WaveEngine.prototype.UpdatePending = function () {
         this.States.Pending = 0;
         this.States.Busy = 1;
         this.WaveIndex++;
+        this.ToneSound.Play();
 
         this.GameWorld.SpawnWave();
     }

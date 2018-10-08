@@ -17,6 +17,9 @@ $.Enemy = function (x, y, gameWorld, enemyType, bossValue) {
     this.SetupAnimations();
     this.SetupStates();
     this.ToggleState(this.StateMoving);
+
+    this.KilledSound = new $.Sound('sounds/shoot.mp3', 1);
+    this.MeleeSound = new $.Sound('sounds/melee2.mp3', 1);
 };
 
 
@@ -113,6 +116,7 @@ $.Enemy.prototype.BulletHit = function (damageResult) {
         this.GameWorld.AddShake(shake);
 
         this.Alive = false;
+        this.KilledSound.Play();
     }
 };
 
@@ -496,6 +500,7 @@ $.Enemy.prototype.UpdateMeleeAttack = function () {
         if (this.EnemyType == $.EnemyTypeCommander) { dp = 8; }
         if (this.EnemyType == $.EnemyTypeBoss) { dp = 12; }
         this.GameWorld.Hero.MeleeHit(dp);
+        this.MeleeSound.Play();
     }
 };
 

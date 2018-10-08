@@ -22,6 +22,7 @@ $.Player = function () {
     this.SetupAnimations();
 
     this.ShootSound = new $.Sound('sounds/shoot1.mp3', 3);
+    this.PowerupSound = new $.Sound('sounds/powerup.mp3', 3);
 };
 
 
@@ -247,6 +248,7 @@ $.Player.prototype.CollectPowerUp = function (powerUp) {
     }
 
     $.Score.PowerUps += 25;
+    this.PowerupSound.Play();
 };
 
 

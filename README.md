@@ -24,10 +24,12 @@ This game was fun to play in a prototype phase and thus will become a 2.0 projec
 ### Add music
 - [x] Add background track
 - [x] Add player shoot
-- [ ] Add player melee damage
-- [ ] Add power-up collected
+- [x] Add player melee damage
+- [x] Add power-up collected
 - [x] Add enemy die
-- [ ] Add round count tone
+- [x] Add round count tone
+- [ ] Fix sounds that perform badly
+- [ ] Add random sounds (melee and tone)
 
 ### Progressive player abilities
 - [ ] Implement player stats (speed, bullets p/s, health)

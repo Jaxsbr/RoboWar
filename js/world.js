@@ -26,6 +26,8 @@ $.World = function () {
     this.PowerUps = [];
     this.PowerUpTick = 5;
     this.PowerUpTime = 0;
+
+    this.SetupSoundTrack();
 };
 
 
@@ -46,6 +48,8 @@ $.World.prototype.Init = function () {
         bul = new $.Bullet(0, 0, null, 0, 0, 0, '');
         this.Bullets.push(bul);
     }
+
+    this.TrackSound.Play();
 };
 
 $.World.prototype.Tick = function () {    
@@ -77,6 +81,13 @@ $.World.prototype.GenerateMap = function () {
             this.Tiles[col][row] = new $.Tile(col, row, this.TileSize, this.TileSize);
         }
     }  
+};
+
+$.World.prototype.SetupSoundTrack = function () {
+    var track = Math.round($.RandomBetween(1, 4.99));
+
+    this.TrackSound = new $.Sound('sounds/track' + track.toString() + '.mp3', 1);
+    this.TrackSound.Loop = true;
 };
 
 $.World.prototype.SpawnWave = function () {
