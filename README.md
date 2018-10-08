@@ -13,7 +13,7 @@ This game was fun to play in a prototype phase and thus will become a 2.0 projec
 - [ ] Add music
 - [ ] Progressive player abilities
 - [ ] Menu Rework
-- [ ] Score Tracking (Azure + Twitter post)
+- [ ] Score Tracking (Azure)
 
 ### Improve graphics
 - [ ] Concept a prototype (Produce games colour pallet)
