@@ -36,9 +36,12 @@ This game was fun to play in a prototype phase and thus will become a 2.0 projec
 - [ ] Implement player stats (speed, bullets p/s, health)
 - [ ] Implement stats mature by level (player gets boosts in stats)
 
-### Menu Rework
+## Menu Rework
+### Welcome Page
 - [ ] Welcome page (cookie notification)
+### Leaderboard Page
 - [ ] Leader board page (shows your personal best time against a score board)
+### Mini Map
 - [ ] Mini map improvements (size, animations, decoration)
 
 ### Score Tracking (Azure)
