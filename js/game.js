@@ -198,9 +198,8 @@ $.MenuNewGame = function (previousState) {
     }
     else {
         $.ToggleGameState($.GameStateLoading);
-        // TODO:
-        // Show loading
         $.LoadImages();
+
         $.TogglePlayMenuShowState(false);
         $.GameWorld = new $.World();
         $.GameWorld.Init();
