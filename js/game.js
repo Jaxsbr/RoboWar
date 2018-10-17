@@ -8,9 +8,11 @@ $.Init = function () {
     $.ToggleGameState($.GameStateMenu);
     $.TogglePlayMenuShowState(true);
 
-    $.GameLoop();
+    $.GameMenu = new $.Menu();
 
-    $.MenuNewGame($.GameStateMenu);
+    $.GameLoop();    
+
+    //$.MenuNewGame($.GameStateMenu);
 };
 
 $.InitGameStates = function () {
@@ -353,7 +355,8 @@ $.GameLoop = function () {
     $.UpdateDelta();
 
     if ($.GameStates.Menu == 1) {
-
+        $.GameMenu.Draw();
+        $.GameMenu.Update();
     }
     else if ($.GameStates.Loading == 1) {
         $.Loading();
