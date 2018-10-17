@@ -4,9 +4,9 @@ $.Player = function () {
     this.Aim = 0;
     this.Rotation = 0;
     this.Direction = $.none;
-    this.Acceleration = 170;
+    this.Acceleration = 190;
     this.Deceleration = 0.3;
-    this.MaxVelocity = 170;
+    this.MaxVelocity = 235;
     this.Velocity = new $.Point(0, 0);
     this.Moving = false;
 
