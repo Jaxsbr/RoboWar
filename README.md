@@ -8,7 +8,7 @@ Migrating to free github hosting ment that the SQL database dependency would hav
 This game was fun to play in a prototype phase and thus will become a 2.0 project.
 
 
-### Todo
+## Todo Overview
 - [ ] Improve graphics
 - [ ] Add music
 - [ ] Progressive player abilities
@@ -16,13 +16,13 @@ This game was fun to play in a prototype phase and thus will become a 2.0 projec
 - [ ] Score Tracking (Azure)
 - [ ] Offline Score Tracking (Cookies)
 
-### Improve graphics
+## Improve graphics
 - [ ] Concept a prototype (Produce games colour pallet)
 - [ ] Remaster terrain (Robot Graveyard)
 - [ ] Remaster all animations
 - [ ] Rework partical effects
 
-### Add music
+## Add music
 - [x] Add background track
 - [x] Add player shoot
 - [x] Add player melee damage
@@ -32,7 +32,7 @@ This game was fun to play in a prototype phase and thus will become a 2.0 projec
 - [ ] Fix sounds that perform badly
 - [ ] Add random sounds (melee and tone)
 
-### Progressive player abilities
+## Progressive player abilities
 - [ ] Implement player stats (speed, bullets p/s, health)
 - [ ] Implement stats mature by level (player gets boosts in stats)
 
@@ -44,11 +44,11 @@ This game was fun to play in a prototype phase and thus will become a 2.0 projec
 ### Mini Map
 - [ ] Mini map improvements (size, animations, decoration)
 
-### Score Tracking (Azure)
+## Score Tracking (Azure)
 - [ ] Score persist (Azure storage else cookie)
 - [ ] Learder board
 
-### Feature Prototype - Improved terrain
+## Feature Prototype - Improved terrain
 - [ ] Implement collidable bomb spawning section (player and enemy hazard)
 - [ ] Water terrain mechanic (water slows player)
 - [ ] Art: Add particles (electric cloud/strands with water contact)
