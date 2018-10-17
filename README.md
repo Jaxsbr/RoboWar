@@ -14,6 +14,7 @@ This game was fun to play in a prototype phase and thus will become a 2.0 projec
 - [ ] Progressive player abilities
 - [ ] Menu Rework
 - [ ] Score Tracking (Azure)
+- [ ] Import and use game utils
 
 ### Improve graphics
 - [ ] Concept a prototype (Produce games colour pallet)
@@ -37,7 +38,6 @@ This game was fun to play in a prototype phase and thus will become a 2.0 projec
 
 ### Menu Rework
 - [ ] Welcome page (cookie notification)
-- [ ] Score graph page (show player improvement over time)
 - [ ] Leader board page (shows your personal best time against a score board)
 - [ ] Mini map improvements (size, animations, decoration)
 
