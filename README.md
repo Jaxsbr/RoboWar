@@ -42,9 +42,11 @@ This game was fun to play in a prototype phase and thus will become a 2.0 projec
 
 ## Menu Rework
 #### Welcome Page
-- [ ] Welcome page (cookie notification)
+- [ ] Simple background
+- [ ] Play button (change game state to play)
+- [ ] Pop up cookie notification (cookies used to track your offline score)
 #### Leaderboard Page
-- [ ] Leader board page (shows your personal best time against a score board)
+- [ ] Leader board page (shows best scores)
 #### Mini Map
 - [ ] Mini map improvements (size, animations, decoration)
 
