@@ -1,12 +1,16 @@
 $.Player = function () {
     var spawn = this.GenerateSpawnPoint();
-    this.Bounds = new $.Rectangle(spawn.X, spawn.Y, 75, 75);
+    this.Bounds = new $.Rectangle(spawn.X, spawn.Y, 125, 125);
     this.Aim = 0;
     this.Rotation = 0;
+    this.RotationVelocity = 0;
+    this.RotationDeceleration = 0.92;
     this.Direction = $.none;
-    this.Acceleration = 190;
-    this.Deceleration = 0.3;
-    this.MaxVelocity = 235;
+    this.Acceleration = 50;
+    this.Deceleration = 0.9;
+    this.MaxVelocity = 300;
+    this.AccelerationTurnSpeed = 2;
+    this.TurnSpeed = 4;
     this.Velocity = new $.Point(0, 0);
     this.Moving = false;
 
@@ -282,10 +286,10 @@ $.Player.prototype.UpdateRotation = function () {
         accelerate = true;
     }
     if ($.Keys[$.KeyCodes.A]) { // A Key		
-        this.Rotation -= accelerate ? 4 : 6;
+        this.RotationVelocity = accelerate ? -this.AccelerationTurnSpeed : -this.TurnSpeed;
     }
     if ($.Keys[$.KeyCodes.D]) { // D Key
-        this.Rotation += accelerate ? 4 : 6;
+        this.RotationVelocity = accelerate ? this.AccelerationTurnSpeed : this.TurnSpeed;
     }
 
     if (accelerate) {
@@ -297,6 +301,12 @@ $.Player.prototype.UpdateRotation = function () {
         this.Velocity.X += speed * direction.X;
         this.Velocity.Y += speed * direction.Y;        
     }
+
+    // Apply rotation deceleration
+    this.RotationVelocity *= this.RotationDeceleration;
+
+    // Apply rotation force
+    this.Rotation += this.RotationVelocity;
 
     this.Moving = accelerate;
 };

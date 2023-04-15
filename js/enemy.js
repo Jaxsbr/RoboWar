@@ -13,6 +13,9 @@ $.Enemy = function (x, y, gameWorld, enemyType, bossValue) {
     this.MaxSteerForce = 0.8;
     this.BossValue = bossValue ? bossValue : 0;
 
+    this.Enemy1MinSpeed = 150;
+    this.Enemy1MaxSpeed = 180;
+
     this.CalculateAttributes(x, y);
     this.SetupAnimations();
     this.SetupStates();
@@ -27,7 +30,7 @@ $.Enemy.prototype.CalculateAttributes = function (x, y) {
     switch (this.EnemyType) {
         case $.EnemyTypeNormal:
             this.Bounds = new $.Rectangle(x, y, 100, 100);
-            this.Speed = Math.floor($.RandomBetween(180, 200));
+            this.Speed = Math.floor($.RandomBetween(this.Enemy1MinSpeed, this.Enemy1MaxSpeed));
             this.MaxHP = 12;
             this.HP = this.MaxHP;
             this.MaxEnergy = Math.floor($.RandomBetween(450, 500));
@@ -35,7 +38,7 @@ $.Enemy.prototype.CalculateAttributes = function (x, y) {
             this.MeleeAttackTick = 0.8;
             this.MeleeAttackTime = this.MeleeAttackTick;
             this.KillScore = 10;
-            this.EnergyRegen = 2;
+            this.EnergyRegen = 5;
             break;
         case $.EnemyTypeCommander:
             this.Bounds = new $.Rectangle(x, y, 75, 75);

@@ -6,6 +6,10 @@ $.World = function () {
     this.ShakeLevel = 0;
     this.RenderBounds = new $.Rectangle(0, 0, 0, 0);
 
+    this.WorldWidth = 4096;
+    this.WorldHeight = 4096;
+    this.MiniDivider = 20;
+
     this.LevelModulus = 5;
     this.Enemies = [];
     this.EnemyStartCount = 5;
@@ -58,14 +62,9 @@ $.World.prototype.Tick = function () {
 };
 
 $.World.prototype.GenerateMap = function () {
-    //this.MiniMapWidth = 204.8;
-    //this.MiniMapHeight = 204.8;
-    this.MiniMapWidth = 102.4;
-    this.MiniMapHeight = 102.4;
-    //this.Map = new $.Rectangle(0, 0, 4096, 4096);
-    //this.MiniDivider = 20;
-    this.Map = new $.Rectangle(0, 0, 2048, 2048);
-    this.MiniDivider = 20;
+    this.Map = new $.Rectangle(0, 0, this.WorldWidth, this.WorldHeight);
+    this.MiniMapWidth = this.WorldWidth / this.MiniDivider;
+    this.MiniMapHeight = this.WorldHeight  / this.MiniDivider;
 
     this.TileSize = 32;
     this.TileCols = this.Map.Width / this.TileSize;
@@ -972,7 +971,12 @@ $.World.prototype.DrawMiniMap = function () {
         }
     }
 
-    $.Gtx2.drawImage($.MiniMapImage, mapRect.X - 4, mapRect.Y - 4, 110, 110);
+    $.Gtx2.drawImage(
+        $.MiniMapImage, 
+        mapRect.X - 4, 
+        mapRect.Y - 4, 
+        this.MiniMapHeight + 10, 
+        this.MiniMapWidth + 10);
 
     $.Gtx2.restore();
 
