@@ -1,6 +1,6 @@
 # Robo War
 
-[Player Robo War](https://jaxsbr.github.io/RoboWar/)
+[Play Robo War](https://jaxsbr.github.io/RoboWar/)
 
 ## Description
 
