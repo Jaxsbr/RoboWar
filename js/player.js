@@ -266,6 +266,7 @@ $.Player.prototype.Update = function () {
     this.UpdatePowerUps();
     this.CurrentAnimation.Update();
     this.UpdateCollision();
+    this.UpdateJetTrails();
 };
 
 $.Player.prototype.UpdateCurrentTile = function () {
@@ -384,23 +385,6 @@ $.Player.prototype.UpdateMovement = function () {
 
     this.Velocity.X *= this.Deceleration;
     this.Velocity.Y *= this.Deceleration;
-
-    if (this.Moving) {
-        var particleSize = $.RandomBetween(9, 12);
-        var ttl = $.RandomBetween(0.3, 1);
-
-        var leftPoint = new $.Point(this.Bounds.Left + (this.Bounds.Width / 4), this.Bounds.Bottom);
-        var rightPoint = new $.Point(this.Bounds.Right - (this.Bounds.Width / 4), this.Bounds.Bottom);
-
-        var radians = (this.Rotation - 90) * (Math.PI / 180);
-        var rotationPoint = new $.Point(this.Bounds.Centre.X, this.Bounds.Centre.Y);
-
-        var leftPointRotated = leftPoint.RotatePoint(rotationPoint, radians);
-        var rightPointRotated = rightPoint.RotatePoint(rotationPoint, radians);
-
-        $.GameWorld.EmitParticles(leftPointRotated, ttl, particleSize, this.Velocity);
-        $.GameWorld.EmitParticles(rightPointRotated, ttl, particleSize, this.Velocity);
-    }
 }
 
 $.Player.prototype.UpdateCollision = function () {
@@ -479,6 +463,24 @@ $.Player.prototype.UpdatePowerUps = function () {
     }
 };
 
+$.Player.prototype.UpdateJetTrails = function () {
+    if (this.Moving) {
+        var particleSize = $.RandomBetween(9, 12);
+        var ttl = $.RandomBetween(0.3, 1);
+
+        var leftPoint = new $.Point(this.Bounds.Left + (this.Bounds.Width / 4), this.Bounds.Bottom);
+        var rightPoint = new $.Point(this.Bounds.Right - (this.Bounds.Width / 4), this.Bounds.Bottom);
+
+        var radians = (this.Rotation - 90) * (Math.PI / 180);
+        var rotationPoint = new $.Point(this.Bounds.Centre.X, this.Bounds.Centre.Y);
+
+        var leftPointRotated = leftPoint.RotatePoint(rotationPoint, radians);
+        var rightPointRotated = rightPoint.RotatePoint(rotationPoint, radians);
+
+        $.GameWorld.EmitParticles(leftPointRotated, ttl, particleSize, this.Velocity);
+        $.GameWorld.EmitParticles(rightPointRotated, ttl, particleSize, this.Velocity);
+    }
+};
 
 $.Player.prototype.Draw = function () {
     //this.DrawLaser();
