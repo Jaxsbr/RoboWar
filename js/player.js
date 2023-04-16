@@ -169,8 +169,7 @@ $.Player.prototype.MeleeHit = function (dp) {
     $.GameWorld.AddPlayerMeleeHitEffect();
 
     if (this.HP <= 0) {
-        // TODO:
-        // Died!
+        // Player is dead
         $.SetGameState($.GameStateGameOver);
     }
 };
