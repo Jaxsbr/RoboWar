@@ -13,10 +13,6 @@ $.Enemy = function (x, y, gameWorld, enemyType, bossValue) {
     this.MaxSteerForce = 0.8;
     this.BossValue = bossValue ? bossValue : 0;
 
-    this.Enemy3ShootSpeed = 750;
-
-    
-
     this.CalculateAttributes(x, y);
     this.SetupAnimations();
     this.SetupStates();
@@ -60,6 +56,7 @@ $.Enemy.prototype.CalculateAttributes = function (x, y) {
             this.EnergyRegen = 15;
             break;
         case $.EnemyTypeBoss:
+            this.Enemy3ShootSpeed = 750;
             this.Bounds = new $.Rectangle(x, y, 115, 115);
             this.Speed = Math.floor($.RandomBetween(160, 180));
             this.MaxHP = 200 + (this.BossValue * 20);
