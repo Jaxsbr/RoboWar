@@ -3,7 +3,7 @@ $.WaveEngine = function (gameWorld) {
     this.WaveIndex = 0;    
     this.States = { Pending: 0, Busy: 0 };
 
-    this.WaitTick = 10;
+    this.WaitTick = 3;
     this.WaitTime = this.WaitTick;
     this.ToneSound = new $.Sound('sounds/tone1.mp3', 1);
 };

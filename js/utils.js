@@ -189,6 +189,21 @@ $.Point.prototype.GetAngle = function () {
     return Math.atan2(this.Y, this.X);
 };
 
+$.Point.prototype.RotatePoint = function (origin, angle) {
+    // calculate distance vector
+    var dx = this.X - origin.X;
+    var dy = this.Y - origin.Y;
+
+    // apply rotation matrix
+    var cos = Math.cos(angle);
+    var sin = Math.sin(angle);
+    var rotatedDx = dx * cos - dy * sin;
+    var rotatedDy = dx * sin + dy * cos;
+
+    // add rotated vector to origin
+    return new $.Point(origin.X + rotatedDx, origin.Y + rotatedDy);
+}
+
 $.Point.prototype.Truncate = function (maxValue) {
     if (this.X != 0) {
         if (this.X < 0) { if (this.X < -maxValue) { this.X = -maxValue; } }

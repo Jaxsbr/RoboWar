@@ -5,22 +5,18 @@ $.Init = function () {
     $.InitGameVariables();
     $.InitCanvas();
 
-    $.ToggleGameState($.GameStateMenu);
-    $.TogglePlayMenuShowState(true);
-
+    $.SetGameState($.GameStateMenu);
     $.GameLoop();
-
-    $.MenuNewGame($.GameStateMenu);
 };
 
 $.InitGameStates = function () {
-    $.GameStates = { Menu: 0, Loading: 0, Play: 0, Pause: 0, Score: 0, HighScore: 0 };
     $.GameStateMenu = 1;
     $.GameStateLoading = 2;
     $.GameStatePlay = 3;
     $.GameStatePause = 4;
-    $.GameStateScore = 5;
-    $.GameStateHighScore = 6;
+    $.GameStateGameOver = 5;
+
+    $.CurrentGameState = 0;    
 };
 
 $.InitRequestAnimationFrame = function () {
@@ -69,6 +65,7 @@ $.InitCanvas = function () {
     $.Canvas.height = $.CanvasHeight;
     $.Canvas.style.marginTop = -$.CanvasHeight / 2 + 'px';
     $.Canvas.style.marginLeft = -$.CanvasWidth / 2 + 'px';
+    $.Canvas.style.display = 'block';
 
     $.Gtx = $.Canvas.getContext('2d');
 
@@ -77,6 +74,7 @@ $.InitCanvas = function () {
     $.Canvas1.height = $.CanvasHeight;
     $.Canvas1.style.marginTop = -$.CanvasHeight / 2 + 'px';
     $.Canvas1.style.marginLeft = -$.CanvasWidth / 2 + 'px';
+    $.Canvas1.style.display = 'block';
 
     $.Gtx1 = $.Canvas1.getContext('2d');
 
@@ -85,6 +83,7 @@ $.InitCanvas = function () {
     $.Canvas2.height = $.CanvasHeight;
     $.Canvas2.style.marginTop = -$.CanvasHeight / 2 + 'px';
     $.Canvas2.style.marginLeft = -$.CanvasWidth / 2 + 'px';
+    $.Canvas2.style.display = 'block';
 
     $.Gtx2 = $.Canvas2.getContext('2d');
 
@@ -93,13 +92,14 @@ $.InitCanvas = function () {
     $.Canvas3.height = $.CanvasHeight;
     $.Canvas3.style.marginTop = -$.CanvasHeight / 2 + 'px';
     $.Canvas3.style.marginLeft = -$.CanvasWidth / 2 + 'px';
+    $.Canvas3.style.display = 'block';
 
     $.Gtx3 = $.Canvas3.getContext('2d');
 };
 
 
 $.MouseMove = function (e) {
-    if ($.GameStates.Play == 1) {
+    if ($.CurrentGameState == $.GameStatePlay) {
         $.MousePoint = new $.Point(e.clientX - $.Canvas.offsetLeft, e.clientY - $.Canvas.offsetTop);
     }
 };
@@ -117,7 +117,7 @@ $.KeyDown = function (e) {
     $.Keys[e.keyCode] = true;
 
     if ($.Keys[$.KeyCodes.ESC]) {
-        if ($.GameStates.Play == 1) {
+        if ($.CurrentGameState == $.GameStatePlay) {
             $.MenuPauseGame();
         }
     }
@@ -137,130 +137,99 @@ $.Resize = function () {
     if ($.GameWorld) { $.GameWorld.DoMiniMapDraw = true; }
 };
 
-$.ToggleGameState = function (state) {
-    $.GameStates.Menu = 0;
-    $.GameStates.Loading = 0;
-    $.GameStates.Play = 0;
-    $.GameStates.Pause = 0;
-    $.GameStates.Score = 0;
-    $.GameStates.HighScore = 0;
+$.SetGameState = function (state) {
+    var mainMenu = document.getElementById('main-menu');
+    mainMenu.style.display = 'none';
+    mainMenu.style.visibility = 'hidden';
+
+    var pausedOverlay = document.getElementById('paused-overlay');
+    pausedOverlay.style.visibility = 'hidden';
+    pausedOverlay.style.display = 'none';
+
+    var gameOverOverlay = document.getElementById('game-over-overlay');
+    gameOverOverlay.style.visibility = 'hidden';
+    gameOverOverlay.style.display = 'none';
 
     document.body.style.cursor = '';
 
-    switch (state) {
-        case $.GameStateMenu:
-            $.GameStates.Menu = 1;
-            break;
-        case $.GameStateLoading:
-            $.GameStates.Loading = 1;
-            break;
-        case $.GameStatePlay:
-            $.GameStates.Play = 1;
-            document.body.style.cursor = 'none';
-            break;
-        case $.GameStatePause:
-            $.GameStates.Pause = 1;
-            break;
-        case $.GameStateScore:
-            $.GameStates.Score = 1;
-            break;
-        case $.GameStateHighScore:
-            $.GameStates.HighScore = 1;
-            break;
+    $.CurrentGameState = state;
+
+    $.ActivateMenuGameState(mainMenu);
+    $.ActivateLoadingGameState();
+    $.ActivatePlayGameState();
+    $.ActivatePausedGameState(pausedOverlay);
+    $.ActivateGameOverGameState(gameOverOverlay);
+};
+
+$.ActivateMenuGameState = function(mainMenu) {
+    if ($.CurrentGameState == $.GameStateMenu) {
+        mainMenu.style.display = 'block';
+        mainMenu.style.visibility = 'visible';
     }
 };
 
-$.TogglePlayMenuShowState = function (show) {
-    // var menu = document.getElementById('playMenu');
-    // menu.style.visibility = show ? 'visible' : 'hidden';
-};
-
-$.TogglePauseMenuShowState = function (show) {
-    // var menu = document.getElementById('pauseMenu');
-    // menu.style.visibility = show ? 'visible' : 'hidden';
-};
-
-$.ToggleScoreMenuShowState = function (show) {
-    // var menu = document.getElementById('scoreMenu');
-    // menu.style.visibility = show ? 'visible' : 'hidden';
-};
-
-$.ToggleHighScoreMenuShowState = function (show) {
-    // var menu = document.getElementById('highScoreMenu');
-    // menu.style.visibility = show ? 'visible' : 'hidden';
-};
-
-$.MenuNewGame = function (previousState) {
-    if (previousState && previousState == $.GameStateHighScore) {
-        $.ToggleHighScoreMenuShowState(false);
-        $.ToggleGameState($.GameStateMenu);
-        $.TogglePlayMenuShowState(true);
-    }
-    else {
-        $.ToggleGameState($.GameStateLoading);
+$.ActivateLoadingGameState = function() {
+    if ($.CurrentGameState == $.GameStateLoading) {
         $.LoadImages();
-
-        $.TogglePlayMenuShowState(false);
-        $.GameWorld = new $.World();
-        $.GameWorld.Init();
+        $.CreateNewGameWorld();
     }
 };
 
-$.MenuHighScores = function (currentMenuState) {    
-    if (currentMenuState == $.GameStateMenu) {
-        $.TogglePlayMenuShowState(false);
+$.ActivatePlayGameState = function() {
+    if ($.CurrentGameState == $.GameStatePlay) {
+        document.body.style.cursor = 'none';
     }
-    else if (currentMenuState == $.GameStateScore) {
-        $.ToggleScoreMenuShowState(false);
-    }
+};
 
-    $.ToggleGameState($.GameStateHighScore);
-    $.ToggleHighScoreMenuShowState(true);
+$.ActivatePausedGameState = function(pausedOverlay) {
+    if ($.CurrentGameState == $.GameStatePause) {
+        pausedOverlay.style.visibility = 'visible';
+        pausedOverlay.style.display = 'block';
+    }
+};
+
+$.ActivateGameOverGameState = function(gameOverOverlay) {
+    if ($.CurrentGameState == $.GameStateGameOver) {
+        gameOverOverlay.style.visibility = 'visible';
+        gameOverOverlay.style.display = 'block';
+        $.SetTotalScore();
+    }
+};
+
+$.MenuStartGame = function () {
+    $.SetGameState($.GameStateLoading);
+};
+
+$.MenuToMainMenu = function () {
+    $.InitCanvas();
+    $.SetGameState($.GameStateMenu);
 };
 
 $.MenuPauseGame = function () {
-    $.ToggleGameState($.GameStatePause);    
-    $.TogglePauseMenuShowState(true);    
+    $.SetGameState($.GameStatePause);    
 };
 
 $.MenuResumeGame = function () {
-    $.ToggleGameState($.GameStatePlay);
-    $.TogglePauseMenuShowState(false);
-};
-
-$.MenuQuitGame = function () {
-    $.ToggleGameState($.GameStateScore);
-    $.TogglePauseMenuShowState(false);
-    $.ToggleScoreMenuShowState(true);
-
-    //var scoreMenu = document.getElementById("scoreMenu");
-    //scoreMenu.style.pointerEvents = "none";
-
-    var addScore = document.getElementById("addScore");
-    addScore.style.visibility = "visible";    
-
-    var scoreResults = document.getElementById("scoreResults");
-    scoreResults.textContent = "You scored: " + $.GetTotalScore();
-
-    //scoreMenu.style.pointerEvents = "";
+    $.SetGameState($.GameStatePlay);
 };
 
 $.MenuPlayAgain = function () {
-    $.ToggleScoreMenuShowState(false);
+    $.CreateNewGameWorld();
+    $.SetGameState($.GameStatePlay);
+};
+
+$.CreateNewGameWorld = function () {
     $.GameWorld = null;
     $.GameWorld = new $.World();
     $.GameWorld.Init();
-    $.GameStates.Play = 1;    
-
-    var addScore = document.getElementById("addScore");
-    addScore.style.visibility = "hidden";
 };
 
-$.GetTotalScore = function () {    
+$.SetTotalScore = function () {    
     var bulletScore = Math.floor($.Score.BulletsFired / 2);
     var total = bulletScore + $.Score.EnemyScore + $.Score.PowerUps;
 
-    return total;
+    var scoreSpan = document.getElementById('score');
+    scoreSpan.innerText = total;
 };
 
 $.LoadImages = function () {
@@ -342,29 +311,31 @@ $.LoadImages = function () {
 
 $.Loading = function () {
     if ($.ImagesLoaded == $.ImageCount) {
-        $.ToggleGameState($.GameStatePlay);
-        //document.body.style.cursor = 'none';        
+        $.SetGameState($.GameStatePlay);
     }
 };
 
 $.GameLoop = function () {
     requestAnimationFrame($.GameLoop);
-
     $.UpdateDelta();
 
-    if ($.GameStates.Menu == 1) {
+    if ($.CurrentGameState == $.GameStateMenu) {
 
     }
-    else if ($.GameStates.Loading == 1) {
+
+    if ($.CurrentGameState == $.GameStateLoading) {
         $.Loading();
     }
-    else if ($.GameStates.Play == 1) {
+
+    if ($.CurrentGameState == $.GameStatePlay) {
         $.GameWorld.Tick();
     }
-    else if ($.GameStates.Pause == 1) {
+
+    if ($.CurrentGameState == $.GameStatePause) {
         
     }
-    else if ($.GameStates.Score == 1) {
+
+    if ($.CurrentGameState == $.GameStateGameOver) {
         
     }
 };
@@ -375,7 +346,6 @@ $.UpdateDelta = function () {
     $.Delta = delta / 1000;
     $.Then = now;
 };
-
 
 $.SoundsShoot = 1;
 $.SoundsExplode = 2;

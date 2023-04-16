@@ -6,7 +6,11 @@ $.World = function () {
     this.ShakeLevel = 0;
     this.RenderBounds = new $.Rectangle(0, 0, 0, 0);
 
-    this.LevelModulus = 5;
+    this.WorldWidth = 4096;
+    this.WorldHeight = 4096;
+    this.MiniDivider = 20;
+
+    this.LevelModulus = 2;
     this.Enemies = [];
     this.EnemyStartCount = 5;
     this.SpawnedEnemies = 0;
@@ -58,14 +62,9 @@ $.World.prototype.Tick = function () {
 };
 
 $.World.prototype.GenerateMap = function () {
-    //this.MiniMapWidth = 204.8;
-    //this.MiniMapHeight = 204.8;
-    this.MiniMapWidth = 102.4;
-    this.MiniMapHeight = 102.4;
-    //this.Map = new $.Rectangle(0, 0, 4096, 4096);
-    //this.MiniDivider = 20;
-    this.Map = new $.Rectangle(0, 0, 2048, 2048);
-    this.MiniDivider = 20;
+    this.Map = new $.Rectangle(0, 0, this.WorldWidth, this.WorldHeight);
+    this.MiniMapWidth = this.WorldWidth / this.MiniDivider;
+    this.MiniMapHeight = this.WorldHeight  / this.MiniDivider;
 
     this.TileSize = 32;
     this.TileCols = this.Map.Width / this.TileSize;
@@ -84,7 +83,7 @@ $.World.prototype.GenerateMap = function () {
 };
 
 $.World.prototype.SetupSoundTrack = function () {
-    var track = Math.round($.RandomBetween(1, 4.99));
+    var track = Math.round($.RandomBetween(1, 4));
 
     this.TrackSound = new $.Sound('sounds/track' + track.toString() + '.mp3', 1);
     this.TrackSound.Loop = true;
@@ -99,6 +98,7 @@ $.World.prototype.SpawnWave = function () {
 
     if (this.RoundManager.WaveIndex > 0) {
         var mod = this.RoundManager.WaveIndex % this.LevelModulus;
+
         if (mod == 0) {
             // Every this.LevelModulus increase the difficulty.
             commanderCount = this.RoundManager.WaveIndex / this.LevelModulus;
@@ -108,11 +108,15 @@ $.World.prototype.SpawnWave = function () {
             // Every this.LevelModulus + 1 level boss level.
             bossRound = true;
             bossCount = 1;//Math.floor(this.RoundManager.WaveIndex / this.LevelModulus);
+            
+            // The higher the waveindex on boss round the more commanders
+            commanderCount = Math.floor(this.RoundManager.WaveIndex / this.LevelModulus);
+            this.SpawnedCommanders = 0;
             this.SpawnedBosses = 0;
         }
     }
     
-    this.SpawnCount = bossRound ? bossCount :
+    this.SpawnCount = bossRound ? bossCount + commanderCount :
         this.EnemyStartCount + Math.floor(((this.RoundManager.WaveIndex * 3) / 2)) + commanderCount;
 
     if (commanderCount > 0) {
@@ -413,6 +417,17 @@ $.World.prototype.GetKillPhrase = function () {
     return phrases[random];
 };
 
+$.World.prototype.EmitParticles = function(point, ttl, particleSize, sourceVelocity) {
+    var speed = 55;        
+    var angle = $.RandomVariation(0, Math.PI * 2);
+    var radians = angle;
+    var aim = new $.Point(Math.cos(radians), Math.sin(radians));
+    var direction = sourceVelocity.Normalize(aim);
+
+    var image = this.GetBulletPlayerTrailParticleImage();        
+    this.AddParticle(point.X, point.Y, 'purple', direction, ttl, speed, particleSize, particleSize, image);
+}
+
 $.World.prototype.EmitBulletParticles = function (bullet) {
     var randomParticles = 5;
     var angle = 0;
@@ -553,13 +568,14 @@ $.World.prototype.UpdateSpawner = function () {
         var enemyWidth = 50;
         var enemyHeight = 50;
         var enemyType = $.EnemyTypeNormal;
+
         if (spawnCommander) {
             enemyType = $.EnemyTypeCommander;
             var enemyWidth = 75;
             var enemyHeight = 75;
         }
         if (bossRound) {
-            enemyType = $.EnemyTypeBoss;
+            enemyType = spawnCommander ? $.EnemyTypeCommander : $.EnemyTypeBoss;
             var enemyWidth = 115;
             var enemyHeight = 115;
         }
@@ -972,7 +988,12 @@ $.World.prototype.DrawMiniMap = function () {
         }
     }
 
-    $.Gtx2.drawImage($.MiniMapImage, mapRect.X - 4, mapRect.Y - 4, 110, 110);
+    $.Gtx2.drawImage(
+        $.MiniMapImage, 
+        mapRect.X - 4, 
+        mapRect.Y - 4, 
+        this.MiniMapHeight + 10, 
+        this.MiniMapWidth + 10);
 
     $.Gtx2.restore();
 

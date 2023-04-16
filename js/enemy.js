@@ -26,20 +26,26 @@ $.Enemy = function (x, y, gameWorld, enemyType, bossValue) {
 $.Enemy.prototype.CalculateAttributes = function (x, y) {
     switch (this.EnemyType) {
         case $.EnemyTypeNormal:
+            this.Enemy1ShootSpeed = 650;
+            this.Enemy1MinSpeed = 150;
+            this.Enemy1MaxSpeed = 180;
             this.Bounds = new $.Rectangle(x, y, 100, 100);
-            this.Speed = Math.floor($.RandomBetween(180, 200));
+            this.Speed = Math.floor($.RandomBetween(this.Enemy1MinSpeed, this.Enemy1MaxSpeed));
             this.MaxHP = 12;
             this.HP = this.MaxHP;
             this.MaxEnergy = Math.floor($.RandomBetween(450, 500));
             this.Energy = Math.floor($.RandomBetween(0, this.MaxEnergy));
-            this.MeleeAttackTick = 0.8;
+            this.MeleeAttackTick = 1.5;
             this.MeleeAttackTime = this.MeleeAttackTick;
             this.KillScore = 10;
-            this.EnergyRegen = 2;
+            this.EnergyRegen = 5;
             break;
         case $.EnemyTypeCommander:
+            this.Enemy2ShootSpeed = 1000;
+            this.Enemy2MinSpeed = 250;
+            this.Enemy2MaxSpeed = 270;
             this.Bounds = new $.Rectangle(x, y, 75, 75);
-            this.Speed = Math.floor($.RandomBetween(200, 220));
+            this.Speed = Math.floor($.RandomBetween(this.Enemy2MinSpeed, this.Enemy2MaxSpeed));
             this.MaxHP = 25;
             this.HP = this.MaxHP;
             this.MaxEnergy = Math.floor($.RandomBetween(300, 350));
@@ -47,9 +53,10 @@ $.Enemy.prototype.CalculateAttributes = function (x, y) {
             this.MeleeAttackTick = 0.4;
             this.MeleeAttackTime = this.MeleeAttackTick;
             this.KillScore = 25;
-            this.EnergyRegen = 6;
+            this.EnergyRegen = 15;
             break;
         case $.EnemyTypeBoss:
+            this.Enemy3ShootSpeed = 750;
             this.Bounds = new $.Rectangle(x, y, 115, 115);
             this.Speed = Math.floor($.RandomBetween(160, 180));
             this.MaxHP = 200 + (this.BossValue * 20);
@@ -197,11 +204,25 @@ $.Enemy.prototype.ChargingDone = function () {
     if (this.EnemyType == $.EnemyTypeNormal) { return; }
 
     if (this.EnemyType == $.EnemyTypeCommander) {
-        this.AimedTriShot();
+        this.AimedTriShot(this.Enemy2ShootSpeed);
     }
 
     if (this.EnemyType == $.EnemyTypeBoss) {
         this.SpreadBomb();
+    }
+};
+
+$.Enemy.prototype.GetShootSpeed = function () {
+    if (this.EnemyType == $.EnemyTypeNormal) { 
+        return this.Enemy1ShootSpeed;
+    }
+
+    if (this.EnemyType == $.EnemyTypeCommander) {
+        return this.Enemy2ShootSpeed;
+    }
+
+    if (this.EnemyType == $.EnemyTypeBoss) {
+        return this.Enemy3ShootSpeed;
     }
 };
 
@@ -228,9 +249,8 @@ $.Enemy.prototype.AimedShot = function (speed, size) {
         false);
 };
 
-$.Enemy.prototype.AimedTriShot = function () {
+$.Enemy.prototype.AimedTriShot = function (speed) {
     var playerBounds = this.GameWorld.Hero.Bounds;
-    var speed = 550;
     var size = 10;
     var ttl = 3.5;
     var angle = Math.atan2(
@@ -513,7 +533,7 @@ $.Enemy.prototype.UpdateRangedAttack = function (distance) {
             // Only fire if in range
             if (this.RangedAttackDistance < distance) {
                 this.RangedAttackTime = 0;
-                this.AimedShot(650, 12);
+                this.AimedShot(this.GetShootSpeed(), 12);
             }
         }
     }

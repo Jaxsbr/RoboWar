@@ -1,12 +1,16 @@
 $.Player = function () {
     var spawn = this.GenerateSpawnPoint();
-    this.Bounds = new $.Rectangle(spawn.X, spawn.Y, 75, 75);
+    this.Bounds = new $.Rectangle(spawn.X, spawn.Y, 125, 125);
     this.Aim = 0;
     this.Rotation = 0;
+    this.RotationVelocity = 0;
+    this.RotationDeceleration = 0.92;
     this.Direction = $.none;
-    this.Acceleration = 190;
-    this.Deceleration = 0.3;
-    this.MaxVelocity = 235;
+    this.Acceleration = 50;
+    this.Deceleration = 0.9;
+    this.MaxVelocity = 300;
+    this.AccelerationTurnSpeed = 2;
+    this.TurnSpeed = 4;
     this.Velocity = new $.Point(0, 0);
     this.Moving = false;
 
@@ -165,9 +169,8 @@ $.Player.prototype.MeleeHit = function (dp) {
     $.GameWorld.AddPlayerMeleeHitEffect();
 
     if (this.HP <= 0) {
-        // TODO:
-        // Died!
-        $.MenuQuitGame();
+        // Player is dead
+        $.SetGameState($.GameStateGameOver);
     }
 };
 
@@ -263,6 +266,7 @@ $.Player.prototype.Update = function () {
     this.UpdatePowerUps();
     this.CurrentAnimation.Update();
     this.UpdateCollision();
+    this.UpdateJetTrails();
 };
 
 $.Player.prototype.UpdateCurrentTile = function () {
@@ -282,10 +286,10 @@ $.Player.prototype.UpdateRotation = function () {
         accelerate = true;
     }
     if ($.Keys[$.KeyCodes.A]) { // A Key		
-        this.Rotation -= accelerate ? 4 : 6;
+        this.RotationVelocity = accelerate ? -this.AccelerationTurnSpeed : -this.TurnSpeed;
     }
     if ($.Keys[$.KeyCodes.D]) { // D Key
-        this.Rotation += accelerate ? 4 : 6;
+        this.RotationVelocity = accelerate ? this.AccelerationTurnSpeed : this.TurnSpeed;
     }
 
     if (accelerate) {
@@ -297,6 +301,12 @@ $.Player.prototype.UpdateRotation = function () {
         this.Velocity.X += speed * direction.X;
         this.Velocity.Y += speed * direction.Y;        
     }
+
+    // Apply rotation deceleration
+    this.RotationVelocity *= this.RotationDeceleration;
+
+    // Apply rotation force
+    this.Rotation += this.RotationVelocity;
 
     this.Moving = accelerate;
 };
@@ -453,6 +463,24 @@ $.Player.prototype.UpdatePowerUps = function () {
     }
 };
 
+$.Player.prototype.UpdateJetTrails = function () {
+    if (this.Moving) {
+        var particleSize = $.RandomBetween(9, 12);
+        var ttl = $.RandomBetween(0.3, 1);
+
+        var leftPoint = new $.Point(this.Bounds.Left + (this.Bounds.Width / 4), this.Bounds.Bottom);
+        var rightPoint = new $.Point(this.Bounds.Right - (this.Bounds.Width / 4), this.Bounds.Bottom);
+
+        var radians = (this.Rotation - 90) * (Math.PI / 180);
+        var rotationPoint = new $.Point(this.Bounds.Centre.X, this.Bounds.Centre.Y);
+
+        var leftPointRotated = leftPoint.RotatePoint(rotationPoint, radians);
+        var rightPointRotated = rightPoint.RotatePoint(rotationPoint, radians);
+
+        $.GameWorld.EmitParticles(leftPointRotated, ttl, particleSize, this.Velocity);
+        $.GameWorld.EmitParticles(rightPointRotated, ttl, particleSize, this.Velocity);
+    }
+};
 
 $.Player.prototype.Draw = function () {
     //this.DrawLaser();

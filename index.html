@@ -4,10 +4,43 @@
         <title>Robo War</title><link href="styles.css" rel="stylesheet" type="text/css" /><meta http-equiv="expires" content="0" />
     </head>
     <body>
+
+        <div id="main-menu" class="menu">
+            <h1>Robo War</h1>
+            <p>W - forward</p>
+            <p>A - rotate left</p>
+            <p>D - rotate right</p>
+            <p>Mouse - Aim</p>
+            <p>Left Mouse - Shoot</p>
+            <p>Esc - Pause</p>
+            <button id="start-btn" onclick="$.MenuStartGame();">Start Game</button>
+          </div>
+
         <canvas id="canvas" class="canvas"></canvas>
         <canvas id="canvas1" class="canvas"></canvas>
         <canvas id="canvas2" class="canvas"></canvas>
         <canvas id="canvas3" class="canvas"></canvas>
+
+        <div class="overlay" id="paused-overlay" style="visibility: collapse;">
+            <h2>Paused</h2>
+            <div class="overlay-menu-button">
+                <button id="resume-btn" onclick="$.MenuResumeGame();">Continue</button>
+            </div>
+            <div class="overlay-menu-button">
+                <button id="pause-menu-btn" onclick="$.MenuToMainMenu();">Main Menu</button>
+            </div>
+        </div>
+
+        <div class="overlay" id="game-over-overlay" style="visibility: collapse;">
+            <h2>Game Over</h2>
+            <p>Your score is: <span id="score"></span></p>
+            <div class="overlay-menu-button">
+                <button id="play-again-btn" onclick="$.MenuPlayAgain();">Play Again</button>
+            </div>
+            <div class="overlay-menu-button">
+                <button id="-game-over-menu-btn" onclick="$.MenuToMainMenu();">Main Menu</button>
+            </div>
+        </div>
 
         <script>var $ = {};</script>
         <script src="js/sound.js"></script>      
