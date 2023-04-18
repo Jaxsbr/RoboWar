@@ -31,6 +31,9 @@ $.World = function () {
     this.PowerUpTick = 5;
     this.PowerUpTime = 0;
 
+    this.CursorWidth = 50;
+    this.CursorHeight = 50;
+
     this.SetupSoundTrack();
 };
 
@@ -449,6 +452,32 @@ $.World.prototype.EmitBulletParticles = function (bullet) {
         this.AddParticle(x, y, 'maroon', direction, ttl, speed, particleSize, particleSize, image);
     }
 };
+
+$.World.prototype.GetClosesInRangeEnemy = function (point, range) {
+    var closestDistance = null;
+    var enemyIndex = null;
+
+    for (var i = 0; i < this.Enemies.length; i++) {
+        var currentEnemy = this.Enemies[i];
+        var distance = point.DistanceBetween(currentEnemy.Bounds.Centre);
+
+        if (closestDistance == null) {
+            closestDistance = distance;
+            enemyIndex = i;
+        }
+
+        if (distance < closestDistance) {
+            closestDistance = distance;
+            enemyIndex = i;
+        }
+    }
+
+    if (enemyIndex != null && closestDistance <= range) {
+        return this.Enemies[enemyIndex]
+    }
+    
+    return null;    
+}
 
 
 // Update Functions
@@ -1165,6 +1194,24 @@ $.World.prototype.DrawHUD = function () {
 
 
     // CURSOR
-    $.Gtx3.drawImage($.CursorImage, $.MousePoint.X, $.MousePoint.Y, 25, 25);
+    if (this.Hero.AutoShoot) {
+        if (this.Hero.CurrentTarget) {
+            var aimPoint = this.Hero.CurrentTarget.Bounds.Centre;
+            $.Gtx3.drawImage(
+                $.CursorImage, 
+                aimPoint.X - $.CanvasBounds.X - this.CursorWidth / 2, 
+                aimPoint.Y - $.CanvasBounds.Y - this.CursorHeight / 2, 
+                this.CursorWidth, 
+                this.CursorHeight);
+        }
+    } else {
+        $.Gtx3.drawImage(
+            $.CursorImage, 
+            $.MousePoint.X, 
+            $.MousePoint.Y, 
+            this.CursorWidth / 2, 
+            this.CursorHeight / 2);
+    }
+    
     $.Gtx3.restore();
 };
