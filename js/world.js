@@ -1205,7 +1205,12 @@ $.World.prototype.DrawHUD = function () {
                 this.CursorHeight);
         }
     } else {
-        $.Gtx3.drawImage($.CursorImage, $.MousePoint.X, $.MousePoint.Y, 25, 25);
+        $.Gtx3.drawImage(
+            $.CursorImage, 
+            $.MousePoint.X, 
+            $.MousePoint.Y, 
+            this.CursorWidth / 2, 
+            this.CursorHeight / 2);
     }
     
     $.Gtx3.restore();
