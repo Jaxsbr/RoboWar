@@ -292,13 +292,15 @@ $.Player.prototype.UpdateRotation = function () {
     var accelerate = false;
     var speed = this.GetMoveSpeed() * $.Delta;
 
-    if ($.Keys[$.KeyCodes.W]) { // W Key
+    if ($.Keys[$.KeyCodes.W] || $.Keys[$.KeyCodes.UP]) {
         accelerate = true;
     }
-    if ($.Keys[$.KeyCodes.A]) { // A Key		
+
+    if ($.Keys[$.KeyCodes.A] || $.Keys[$.KeyCodes.LEFT]) {
         this.RotationVelocity = accelerate ? -this.AccelerationTurnSpeed : -this.TurnSpeed;
     }
-    if ($.Keys[$.KeyCodes.D]) { // D Key
+
+    if ($.Keys[$.KeyCodes.D] || $.Keys[$.KeyCodes.RIGHT]) {
         this.RotationVelocity = accelerate ? this.AccelerationTurnSpeed : this.TurnSpeed;
     }
 
