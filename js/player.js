@@ -13,6 +13,8 @@ $.Player = function () {
     this.TurnSpeed = 4;
     this.Velocity = new $.Point(0, 0);
     this.Moving = false;
+    this.AutoShoot = true;
+    this.ShootRange = 500;
 
     this.MaxHP = 75;
     this.HP = this.MaxHP;
@@ -105,17 +107,24 @@ $.Player.prototype.ColorFromPowerUp = function () {
 };
 
 $.Player.prototype.ShootBullet = function () {
-    var mouse = new $.Point($.MousePoint.X + $.CanvasBounds.X, $.MousePoint.Y + $.CanvasBounds.Y);
+    var aimPoint;
+    if (this.AutoShoot && this.CurrentTarget) {
+        aimPoint = this.CurrentTarget.Bounds.Centre;
+    } else {
+        aimPoint = new $.Point($.MousePoint.X + $.CanvasBounds.X, $.MousePoint.Y + $.CanvasBounds.Y);   
+    }
 
     var speed = 800;
     var size = 12;
     var ttl = 3.5;
     var shots = this.TripleShot ? 3 : 1;    
     var angle = Math.atan2(
-        mouse.Y - this.Bounds.Centre.Y,
-        mouse.X - this.Bounds.Centre.X) * 180 / Math.PI;
+        aimPoint.Y - this.Bounds.Centre.Y,
+        aimPoint.X - this.Bounds.Centre.X) * 180 / Math.PI;
     var color = this.ColorFromPowerUp();
 
+    // NOTE
+    // Shots represent the effect of multiple projectiles gained by the triple shoot power up
     for (var i = 0; i < shots; i++) {
         var aim;
         var newAngle = angle;
@@ -137,7 +146,7 @@ $.Player.prototype.ShootBullet = function () {
             direction = aim.Normalize(this.Bounds.Centre);
         }
         else {
-            direction = mouse.Normalize(this.Bounds.Centre);
+            direction = aimPoint.Normalize(this.Bounds.Centre);
         }
                 
         var x = this.Bounds.Centre.X - size / 2;
@@ -261,12 +270,13 @@ $.Player.prototype.Update = function () {
     this.UpdateAim();
     this.UpdateRotation();
     //this.UpdateDirection();
+    this.UpdateTarget();
     this.UpdateMovement();
     this.UpdateShooting();
     this.UpdatePowerUps();
-    this.CurrentAnimation.Update();
-    this.UpdateCollision();
+    this.UpdateWorldCollision();
     this.UpdateJetTrails();
+    this.CurrentAnimation.Update();
 };
 
 $.Player.prototype.UpdateCurrentTile = function () {
@@ -379,6 +389,30 @@ $.Player.prototype.UpdateDirection = function () {
     this.Velocity.Y += yMove;
 }
 
+$.Player.prototype.UpdateTarget = function () {
+    if (!this.AutoShoot) {
+        return;
+    }
+
+    // Set target that is closest and in shoot range
+    if (this.CurrentTarget == null) {
+        this.CurrentTarget = $.GameWorld.GetClosesInRangeEnemy(this.Bounds.Centre, this.ShootRange);
+    }
+
+    // Set target to null if it dies
+    if (this.CurrentTarget != null && !this.CurrentTarget.Alive) {
+        this.CurrentTarget = null;
+    }
+
+    // Set target to null if it goes out of range
+    if (this.CurrentTarget != null && this.CurrentTarget.Alive) {
+        var targetDistance = this.Bounds.Centre.DistanceBetween(this.CurrentTarget.Bounds.Centre);
+        if (targetDistance > this.ShootRange) {
+            this.CurrentTarget = null;
+        }
+    }
+}
+
 $.Player.prototype.UpdateMovement = function () {
     this.Velocity.Truncate(this.MaxVelocity);
 
@@ -389,7 +423,7 @@ $.Player.prototype.UpdateMovement = function () {
     this.Velocity.Y *= this.Deceleration;
 }
 
-$.Player.prototype.UpdateCollision = function () {
+$.Player.prototype.UpdateWorldCollision = function () {
     if (!this.Bounds.ContainsRect($.GameWorld.Map)) {
         if (this.Bounds.X < $.GameWorld.Map.X) {
             this.Bounds.X = $.GameWorld.Map.X;
@@ -407,7 +441,11 @@ $.Player.prototype.UpdateCollision = function () {
 };
 
 $.Player.prototype.UpdateShooting = function () {
-    if ($.IsMouseDown) {
+    var shootEnabled = 
+        (this.AutoShoot && this.CurrentTarget != null) ||
+        (!this.AutoShoot && $.IsMouseDown);
+
+    if (shootEnabled) {
         var bulletRate = this.RapidFire ? this.BulletRate / 1.5 : this.BulletRate;
         this.BulletTime += $.Delta;
         if (this.BulletTime >= bulletRate) {
