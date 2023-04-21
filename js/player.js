@@ -167,7 +167,7 @@ $.Player.prototype.ShootBullet = function () {
     this.ShootSound.Play();
 };
 
-$.Player.prototype.MeleeHit = function (dp) {
+$.Player.prototype.ApplyDamage = function (dp) {
     if (this.Invulnerable) {
         // TODO:
         // Show invulnerable hit effect.
@@ -175,29 +175,6 @@ $.Player.prototype.MeleeHit = function (dp) {
     }
 
     this.HP -= dp;
-    $.GameWorld.AddPlayerMeleeHitEffect();
-
-    if (this.HP <= 0) {
-        // Player is dead
-        $.SetGameState($.GameStateGameOver);
-    }
-};
-
-$.Player.prototype.BulletHit = function (dp) {
-    if (this.Invulnerable) {
-        // TODO:
-        // Show invulnerable hit effect.
-        return;
-    }
-
-    this.HP -= dp;
-    $.GameWorld.AddPlayerBulletHitEffect();
-
-    if (this.HP <= 0) {
-        // TODO:
-        // Died!
-        $.MenuQuitGame();
-    }
 };
 
 $.Player.prototype.GetMoveSpeed = function () {
@@ -277,6 +254,7 @@ $.Player.prototype.Update = function () {
     this.UpdateWorldCollision();
     this.UpdateJetTrails();
     this.CurrentAnimation.Update();
+    this.UpdateGameOver();
 };
 
 $.Player.prototype.UpdateCurrentTile = function () {
@@ -519,6 +497,16 @@ $.Player.prototype.UpdateJetTrails = function () {
 
         $.GameWorld.EmitParticles(leftPointRotated, ttl, particleSize, this.Velocity);
         $.GameWorld.EmitParticles(rightPointRotated, ttl, particleSize, this.Velocity);
+    }
+};
+
+$.Player.prototype.UpdateGameOver = function () {
+    if (this.HP <= 0) {
+        this.HP = 0;
+
+        // TODO:
+        // Died!
+        $.SetGameState($.GameStateGameOver);
     }
 };
 

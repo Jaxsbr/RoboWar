@@ -519,8 +519,9 @@ $.Enemy.prototype.UpdateMeleeAttack = function () {
         var dp = 5;
         if (this.EnemyType == $.EnemyTypeCommander) { dp = 8; }
         if (this.EnemyType == $.EnemyTypeBoss) { dp = 12; }
-        this.GameWorld.Hero.MeleeHit(dp);
+        this.GameWorld.Hero.ApplyDamage(dp);
         this.MeleeSound.Play();
+        $.GameWorld.AddPlayerMeleeHitEffect();
     }
 };
 

@@ -34,7 +34,7 @@ $.World = function () {
     this.CursorWidth = 50;
     this.CursorHeight = 50;
 
-    this.SetupSoundTrack();
+    this.BulletHitSound = new $.Sound('sounds/melee2.mp3', 1);
 };
 
 
@@ -56,7 +56,7 @@ $.World.prototype.Init = function () {
         this.Bullets.push(bul);
     }
 
-    this.TrackSound.Play();
+    this.SetupSoundTrack();    
 };
 
 $.World.prototype.Tick = function () {    
@@ -90,6 +90,22 @@ $.World.prototype.SetupSoundTrack = function () {
 
     this.TrackSound = new $.Sound('sounds/track' + track.toString() + '.mp3', 1);
     this.TrackSound.Loop = true;
+    this.TrackSound.Play();
+};
+
+$.World.prototype.Dispose = function () {
+    this.TrackSound.Loop = false;
+    this.TrackSound.Pause();
+    this.TrackSound.Reset();
+    this.TrackSound = null;
+};
+
+$.World.prototype.StartPause = function () {
+    this.TrackSound.Pause();
+};
+
+$.World.prototype.ContinueGame = function () {
+    this.TrackSound.Play();
 };
 
 $.World.prototype.SpawnWave = function () {
@@ -677,8 +693,10 @@ $.World.prototype.UpdateBullets = function () {
         if (!bullet.IsPlayer) {
 
             // Hero hit
-            if (bullet.Bounds.IntersectRect(this.Hero.Bounds)) {            
-                this.Hero.BulletHit(10);
+            if (bullet.Bounds.IntersectRect(this.Hero.Bounds)) {
+                this.Hero.ApplyDamage(10);
+                this.BulletHitSound.Play();
+                this.AddPlayerBulletHitEffect();
                 bullet.TTL = 0;
                 continue;
             }

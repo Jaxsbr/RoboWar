@@ -206,11 +206,17 @@ $.MenuToMainMenu = function () {
 };
 
 $.MenuPauseGame = function () {
-    $.SetGameState($.GameStatePause);    
+    $.SetGameState($.GameStatePause);
+    if ($.GameWorld) {
+        $.GameWorld.StartPause();
+    }
 };
 
 $.MenuResumeGame = function () {
     $.SetGameState($.GameStatePlay);
+        if ($.GameWorld) {
+        $.GameWorld.ContinueGame();
+    }
 };
 
 $.MenuPlayAgain = function () {
@@ -219,6 +225,10 @@ $.MenuPlayAgain = function () {
 };
 
 $.CreateNewGameWorld = function () {
+    if ($.GameWorld) {
+        $.GameWorld.Dispose();
+    }
+
     $.GameWorld = null;
     $.GameWorld = new $.World();
     $.GameWorld.Init();
