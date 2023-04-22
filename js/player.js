@@ -23,6 +23,9 @@ $.Player = function () {
     this.BulletTime = this.BulletRate;
     this.Bullets = [];    
 
+    this.JetEmitElapsed = 0;
+    this.MaxJetEmitElapsed = 0.02;
+
     this.SetupPowerUpTimers();
     this.CurrentTile = null;
     this.SetupAnimations();
@@ -238,6 +241,23 @@ $.Player.prototype.CollectPowerUp = function (powerUp) {
 
     $.Score.PowerUps += 25;
     this.PowerupSound.Play();
+};
+
+$.Player.prototype.EmitJetTrailParticles = function () {
+    var particleSize = $.RandomBetween(9, 12);
+    var ttl = $.RandomBetween(0.3, 1);
+
+    var leftPoint = new $.Point(this.Bounds.Left + (this.Bounds.Width / 4), this.Bounds.Bottom);
+    var rightPoint = new $.Point(this.Bounds.Right - (this.Bounds.Width / 4), this.Bounds.Bottom);
+
+    var radians = (this.Rotation - 90) * (Math.PI / 180);
+    var rotationPoint = new $.Point(this.Bounds.Centre.X, this.Bounds.Centre.Y);
+
+    var leftPointRotated = leftPoint.RotatePoint(rotationPoint, radians);
+    var rightPointRotated = rightPoint.RotatePoint(rotationPoint, radians);
+
+    $.GameWorld.EmitParticles(leftPointRotated, ttl, particleSize, this.Velocity);
+    $.GameWorld.EmitParticles(rightPointRotated, ttl, particleSize, this.Velocity);
 };
 
 
@@ -483,20 +503,13 @@ $.Player.prototype.UpdatePowerUps = function () {
 
 $.Player.prototype.UpdateJetTrails = function () {
     if (this.Moving) {
-        var particleSize = $.RandomBetween(9, 12);
-        var ttl = $.RandomBetween(0.3, 1);
-
-        var leftPoint = new $.Point(this.Bounds.Left + (this.Bounds.Width / 4), this.Bounds.Bottom);
-        var rightPoint = new $.Point(this.Bounds.Right - (this.Bounds.Width / 4), this.Bounds.Bottom);
-
-        var radians = (this.Rotation - 90) * (Math.PI / 180);
-        var rotationPoint = new $.Point(this.Bounds.Centre.X, this.Bounds.Centre.Y);
-
-        var leftPointRotated = leftPoint.RotatePoint(rotationPoint, radians);
-        var rightPointRotated = rightPoint.RotatePoint(rotationPoint, radians);
-
-        $.GameWorld.EmitParticles(leftPointRotated, ttl, particleSize, this.Velocity);
-        $.GameWorld.EmitParticles(rightPointRotated, ttl, particleSize, this.Velocity);
+        this.JetEmitElapsed += $.Delta;
+        if (this.JetEmitElapsed >= this.MaxJetEmitElapsed) {
+            this.JetEmitElapsed = 0;
+            this.EmitJetTrailParticles();
+        }
+    } else {
+        this.JetEmitElapsed = 0;
     }
 };
 

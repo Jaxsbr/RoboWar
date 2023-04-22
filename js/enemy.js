@@ -57,6 +57,7 @@ $.Enemy.prototype.CalculateAttributes = function (x, y) {
             break;
         case $.EnemyTypeBoss:
             this.Enemy3ShootSpeed = 750;
+            this.Enemy3SpreadBombSpeed = 500;
             this.Bounds = new $.Rectangle(x, y, 115, 115);
             this.Speed = Math.floor($.RandomBetween(160, 180));
             this.MaxHP = 200 + (this.BossValue * 20);
@@ -301,10 +302,9 @@ $.Enemy.prototype.AimedTriShot = function (speed) {
 };
 
 $.Enemy.prototype.SpreadBomb = function () {
-    var speed = 500;
     var size = 8;
     var ttl = 3.5;
-    var divider = 20;
+    var divider = 30;
     var degrees = 360 / divider;
     var angle = 0;
     var color = "white";
@@ -322,7 +322,7 @@ $.Enemy.prototype.SpreadBomb = function () {
             this.Bounds.Centre.X - size / 2,
             this.Bounds.Centre.Y - size / 2,
             direction,
-            speed,
+            this.Enemy3SpreadBombSpeed,
             size,
             ttl,
             color,

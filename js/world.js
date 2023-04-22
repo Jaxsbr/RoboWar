@@ -252,7 +252,7 @@ $.World.prototype.AddParticle = function (
 };
 
 $.World.prototype.AddBulletHitEffect = function (damageResult) {
-    var divider = 6;
+    var divider = 120;
     var degrees = 360 / divider;
     var angle = 0;
     var shades = [-0.02, -0.01, 0, 0.01, 0.02];
@@ -272,7 +272,7 @@ $.World.prototype.AddBulletHitEffect = function (damageResult) {
     }
 
     // Random particles
-    var randomParticles = 12;
+    var randomParticles = 2;
     for (var i = 0; i < randomParticles; i++) {
 
         var randomAngle = Math.floor($.RandomBetween(1, 360));
@@ -286,7 +286,7 @@ $.World.prototype.AddBulletHitEffect = function (damageResult) {
 };
 
 $.World.prototype.AddExplosionEffect = function (point) {
-    var divider = 10;
+    var divider = 60;
     var degrees = 360 / divider;
     var angle = 0;
     var color = 'orange';
@@ -303,7 +303,7 @@ $.World.prototype.AddExplosionEffect = function (point) {
         angle += divider;
     }
 
-    divider = 8;
+    divider = 120;
     degrees = 360 / divider;
     color = 'red';
     angle = 0;
@@ -321,7 +321,7 @@ $.World.prototype.AddExplosionEffect = function (point) {
     }
     
     // Random particles
-    var randomParticles = 12;
+    var randomParticles = 3;
     for (var i = 0; i < randomParticles; i++) {
 
         var randomAngle = Math.floor($.RandomBetween(1, 360));
@@ -336,7 +336,7 @@ $.World.prototype.AddExplosionEffect = function (point) {
 };
 
 $.World.prototype.AddPlayerMeleeHitEffect = function () {
-    var randomParticles = 48;
+    var randomParticles = 3;
     for (var i = 0; i < randomParticles; i++) {
 
         var randomAngle = Math.floor($.RandomBetween(1, 360));
@@ -351,12 +351,12 @@ $.World.prototype.AddPlayerMeleeHitEffect = function () {
 };
 
 $.World.prototype.AddPlayerBulletHitEffect = function () {
-    var randomParticles = 36;
+    var randomParticles = 2;
     for (var i = 0; i < randomParticles; i++) {
 
         var randomAngle = Math.floor($.RandomBetween(1, 360));
         var ttl = $.RandomBetween(0.6, 1);
-        var speed = $.RandomBetween(50, 150);
+        var speed = $.RandomBetween(50, 90);
         var direction = new $.Point(-Math.sin(randomAngle), -Math.cos(randomAngle));
         var particleSize = $.RandomBetween(4, 8);
 
@@ -443,9 +443,8 @@ $.World.prototype.EmitParticles = function(point, ttl, particleSize, sourceVeloc
     var radians = angle;
     var aim = new $.Point(Math.cos(radians), Math.sin(radians));
     var direction = sourceVelocity.Normalize(aim);
-
-    var image = this.GetBulletPlayerTrailParticleImage();        
-    this.AddParticle(point.X, point.Y, 'purple', direction, ttl, speed, particleSize, particleSize, image);
+      
+    this.AddParticle(point.X, point.Y, 'purple', direction, ttl, speed, particleSize, particleSize, null);//image);
 }
 
 $.World.prototype.EmitBulletParticles = function (bullet) {
