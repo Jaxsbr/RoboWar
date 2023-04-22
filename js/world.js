@@ -44,17 +44,6 @@ $.World.prototype.Init = function () {
     this.Hero = new $.Player();
     this.RoundManager = new $.WaveEngine(this);    
 
-    var par = null;
-    for (var i = 0; i < 2500; i++) {
-        par = new $.Particle(0, 0, '', null, 0, 0, 0, 0);        
-        this.Particles.push(par);
-    }
-
-    var bul = null;
-    for (var i = 0; i < 400; i++) {
-        bul = new $.Bullet(0, 0, null, 0, 0, 0, '');
-        this.Bullets.push(bul);
-    }
 
     this.SetupSoundTrack();    
 };
@@ -235,6 +224,33 @@ $.World.prototype.GetBulletPlayerTrailParticleImage = function () {
     return image;
 };
 
+$.World.prototype.AddParticle = function (
+    particlePointX, particlePointY, color, direction, ttl, speed, particleSizeWidth, particleSizeHeight, image) {
+    for (var i = 0; i < this.Particles.length; i++) {        
+        if (this.Particles[i].TTL <= 0) {
+            var par = this.Particles[i];
+            par.Bounds.Set(
+                particlePointX,
+                particlePointY,
+                particleSizeWidth,
+                particleSizeHeight);
+            par.Color = color;
+            par.Velocity.Set(0, 0);
+            par.Direction = direction;
+            par.Opacity = 1;
+            par.MaxTTL = ttl;
+            par.TTL = par.MaxTTL;
+            par.Image = image;
+            break;
+        }
+    }
+
+    var newParticle = new $.Particle(
+        particlePointX, particlePointY, color, direction, ttl, speed, particleSizeWidth, particleSizeHeight);
+    newParticle.Image = image;
+    this.Particles.push(newParticle);
+};
+
 $.World.prototype.AddBulletHitEffect = function (damageResult) {
     var divider = 6;
     var degrees = 360 / divider;
@@ -251,9 +267,7 @@ $.World.prototype.AddBulletHitEffect = function (damageResult) {
         var random = Math.floor($.RandomBetween(0, (shades.length - 1) + 0.99));
         color = $.ShadeColor(color, shades[random]);
 
-        var par = new $.Particle(damageResult.point.X, damageResult.point.Y, color, direction, ttl, speed, particleSize, particleSize);
-        par.Image = this.GetBulletHitParticleImage();
-        this.Particles.push(par);
+        this.AddParticle(damageResult.point.X, damageResult.point.Y, color, direction, ttl, speed, particleSize, particleSize, this.GetBulletHitParticleImage());
         angle += divider;
     }
 
@@ -351,36 +365,19 @@ $.World.prototype.AddPlayerBulletHitEffect = function () {
     }
 };
 
-$.World.prototype.AddParticle = function (x, y, color, direction, ttl, speed, sizeW, sizeH, image) {
-    var particle = null;
-    for (var i = 0; i < this.Particles.length; i++) {
-        particle = this.Particles[i];
-        if (particle.TTL <= 0) { break; }
-    }
-
-    if (particle) {
-        particle.Bounds = new $.Rectangle(x, y, sizeW, sizeH);
-        particle.Color = color;
-        particle.Velocity = new $.Point(0, 0);
-        particle.Direction = direction;
-        particle.Opacity = 1;
-        particle.Speed = speed;
-        particle.MaxTTL = ttl;
-        particle.TTL = ttl;
-        particle.Image = image;        
-    }    
-};
-
-$.World.prototype.AddBullet = function (isPlayer, x, y, direction, speed, size, ttl, color, pierce) {
+$.World.prototype.AddBullet = function (
+    isPlayer, x, y, direction, speed, size, ttl, color, pierce) {
     var bullet = null;
     for (var i = 0; i < this.Bullets.length; i++) {
-        bullet = this.Bullets[i];
-        if (bullet.TTL <= 0) { break; }
+        if (this.Bullets[i].TTL <= 0) { 
+            bullet = this.Bullets[i];
+            break; 
+        }
     }
 
     if (bullet) {
-        bullet.Bounds = new $.Rectangle(x, y, size, size);
-        bullet.Velocity = new $.Point(0, 0);
+        bullet.Bounds.Set(x, y, size, size);
+        bullet.Velocity.Set(0, 0);
         bullet.Direction = direction;
         bullet.Speed = speed;
         bullet.TTL = ttl;
@@ -388,6 +385,10 @@ $.World.prototype.AddBullet = function (isPlayer, x, y, direction, speed, size, 
         bullet.Pierce = pierce;
         bullet.HitCount = 1;
         bullet.IsPlayer = isPlayer;
+    } else {
+        bullet = new $.Bullet(
+            x, y, direction, speed, size, ttl, color, pierce, isPlayer);
+        this.Bullets.push(bullet);
     }
 };
 
@@ -561,11 +562,19 @@ $.World.prototype.UpdateCamera = function () {
         }
     }
 
-    this.RenderBounds = new $.Rectangle(
-        $.CanvasBounds.X - this.TileSize,
-        $.CanvasBounds.Y - this.TileSize,
-        $.CanvasBounds.Width + (this.TileSize * 2),
-        $.CanvasBounds.Height + (this.TileSize * 2));
+    if (!this.RenderBounds) {
+        this.RenderBounds = new $.Rectangle(
+            $.CanvasBounds.X - this.TileSize,
+            $.CanvasBounds.Y - this.TileSize,
+            $.CanvasBounds.Width + (this.TileSize * 2),
+            $.CanvasBounds.Height + (this.TileSize * 2));
+    } else {
+        this.RenderBounds.Set(
+            $.CanvasBounds.X - this.TileSize,
+            $.CanvasBounds.Y - this.TileSize,
+            $.CanvasBounds.Width + (this.TileSize * 2),
+            $.CanvasBounds.Height + (this.TileSize * 2));
+    }  
 
     if (this.DoTileDraw) {
         //this.DoMiniMapDraw = true;
@@ -597,10 +606,16 @@ $.World.prototype.UpdateSpawner = function () {
         var angle = Math.floor($.RandomBetween(1, 360));
         var radius = $.CanvasBounds.Width >= $.CanvasBounds.Height ? $.CanvasBounds.Width : $.CanvasBounds.Height;
         radius = radius / 2;
-        var point = new $.Point(
-            this.Hero.Bounds.Centre.X + (Math.cos(angle) * radius),
-            this.Hero.Bounds.Centre.Y + (Math.sin(angle) * radius));
 
+        if (!this.HeroProximitySpawnPoint) {
+            this.HeroProximitySpawnPoint = new $.Point(
+                this.Hero.Bounds.Centre.X + (Math.cos(angle) * radius),
+                this.Hero.Bounds.Centre.Y + (Math.sin(angle) * radius));
+        } else {
+            this.HeroProximitySpawnPoint.Set(
+                this.Hero.Bounds.Centre.X + (Math.cos(angle) * radius),
+                this.Hero.Bounds.Centre.Y + (Math.sin(angle) * radius));
+        }
 
         var spawnCommander = false;
         for (var i = 0; i < this.CommanderSpawnIndexes.length; i++) {
@@ -625,14 +640,12 @@ $.World.prototype.UpdateSpawner = function () {
             var enemyHeight = 115;
         }
 
-
-
-        if (point.X < 0) { point.X = 0; }
-        if (point.X > this.Map.Width - enemyWidth) { point.X = this.Map.Width - enemyWidth; }
-        if (point.Y < 0) { point.Y = 0; }
-        if (point.Y > this.Map.Height - enemyHeight) { point.Y = this.Map.Height - enemyHeight; }
+        if (this.HeroProximitySpawnPoint.X < 0) { this.HeroProximitySpawnPoint.X = 0; }
+        if (this.HeroProximitySpawnPoint.X > this.Map.Width - enemyWidth) { this.HeroProximitySpawnPoint.X = this.Map.Width - enemyWidth; }
+        if (this.HeroProximitySpawnPoint.Y < 0) { this.HeroProximitySpawnPoint.Y = 0; }
+        if (this.HeroProximitySpawnPoint.Y > this.Map.Height - enemyHeight) { this.HeroProximitySpawnPoint.Y = this.Map.Height - enemyHeight; }
         
-        this.Enemies.push(new $.Enemy(point.X, point.Y, this, enemyType, bossValue));
+        this.Enemies.push(new $.Enemy(this.HeroProximitySpawnPoint.X, this.HeroProximitySpawnPoint.Y, this, enemyType, bossValue));
 
         this.SpawnedEnemies++;
     }
@@ -973,15 +986,17 @@ $.World.prototype.DrawInfo = function () {
 $.World.prototype.DrawMiniMap = function () {
     if (!this.ShowMiniMap) { return; }
 
-    var mapRect = new $.Rectangle(
-    $.CanvasBounds.Width - (this.MiniMapWidth + 10),
-    $.CanvasBounds.Height - (this.MiniMapHeight + 10),
-    this.MiniMapWidth,
-    this.MiniMapHeight);
+    if (!this.MiniMapRect) {
+        this.MiniMapRect = new $.Rectangle(
+            $.CanvasBounds.Width - (this.MiniMapWidth + 10),
+            $.CanvasBounds.Height - (this.MiniMapHeight + 10),
+            this.MiniMapWidth,
+            this.MiniMapHeight);
+    }
 
     // Hero
-    var px = mapRect.X + this.Hero.Bounds.Centre.X / this.MiniDivider;
-    var py = mapRect.Y + this.Hero.Bounds.Centre.Y / this.MiniDivider;
+    var px = this.MiniMapRect.X + this.Hero.Bounds.Centre.X / this.MiniDivider;
+    var py = this.MiniMapRect.Y + this.Hero.Bounds.Centre.Y / this.MiniDivider;
     
     $.Gtx3.fillStyle = "lightblue";
     $.Gtx3.fillRect(px, py, 3, 3);
@@ -990,8 +1005,8 @@ $.World.prototype.DrawMiniMap = function () {
     for (var i = 0; i < this.Enemies.length; i++) {
         var enemy = this.Enemies[i];
 
-        px = mapRect.X + enemy.Bounds.Centre.X / this.MiniDivider;
-        py = mapRect.Y + enemy.Bounds.Centre.Y / this.MiniDivider;
+        px = this.MiniMapRect.X + enemy.Bounds.Centre.X / this.MiniDivider;
+        py = this.MiniMapRect.Y + enemy.Bounds.Centre.Y / this.MiniDivider;
 
         $.Gtx3.fillStyle = "lime";
         $.Gtx3.fillRect(px, py, 3, 3);
@@ -1000,8 +1015,8 @@ $.World.prototype.DrawMiniMap = function () {
     // Power ups
     for (var i = 0; i < this.PowerUps.length; i++) {
         var powerUp = this.PowerUps[i];
-        px = mapRect.X + powerUp.Bounds.Centre.X / this.MiniDivider;
-        py = mapRect.Y + powerUp.Bounds.Centre.Y / this.MiniDivider;
+        px = this.MiniMapRect.X + powerUp.Bounds.Centre.X / this.MiniDivider;
+        py = this.MiniMapRect.Y + powerUp.Bounds.Centre.Y / this.MiniDivider;
 
         // TODO:
         // use pulse opacity to show items on map
@@ -1015,7 +1030,7 @@ $.World.prototype.DrawMiniMap = function () {
     $.Gtx2.save();
     $.Gtx2.globalAlpha = 0.6;
     $.Gtx2.fillStyle = "black";
-    $.Gtx2.fillRect(mapRect.X, mapRect.Y, mapRect.Width, mapRect.Height);
+    $.Gtx2.fillRect(this.MiniMapRect.X, this.MiniMapRect.Y, this.MiniMapRect.Width, this.MiniMapRect.Height);
 
     // NOTE:
     // Since width/height are equal we only need 1 tile size,
@@ -1025,8 +1040,8 @@ $.World.prototype.DrawMiniMap = function () {
     for (var col = 0; col < this.TileCols; col++) {
         for (var row = 0; row < this.TileRows; row++) {
 
-            var x = mapRect.X + col * miniTileSize;
-            var y = mapRect.Y + row * miniTileSize;
+            var x = this.MiniMapRect.X + col * miniTileSize;
+            var y = this.MiniMapRect.Y + row * miniTileSize;
 
             var tile = this.Tiles[col][row];
 
@@ -1037,8 +1052,8 @@ $.World.prototype.DrawMiniMap = function () {
 
     $.Gtx2.drawImage(
         $.MiniMapImage, 
-        mapRect.X - 4, 
-        mapRect.Y - 4, 
+        this.MiniMapRect.X - 4, 
+        this.MiniMapRect.Y - 4, 
         this.MiniMapHeight + 10, 
         this.MiniMapWidth + 10);
 

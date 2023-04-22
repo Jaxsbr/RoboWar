@@ -37,8 +37,6 @@ $.Particle.prototype.Draw = function (context) {
     $.Gtx1.save();
     $.Gtx1.globalAlpha = this.Opacity < 0 ? 0 : this.Opacity;
     if (this.Image && this.Image.Image) {
-        //var image = { Image: $.ParticlesImage, xSource: 0, ySource: 0, wSource: 50, hSource: 50 };                
-
         context.drawImage(
            this.Image.Image,
            this.Image.xSource,

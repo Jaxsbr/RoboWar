@@ -33,13 +33,6 @@ $.Bullet.prototype.Draw = function () {
     var x = this.Bounds.Centre.X - $.CanvasBounds.X;
     var y = this.Bounds.Centre.Y - $.CanvasBounds.Y;
 
-    //$.Gtx1.drawImage(
-    //    $.BulletImage,
-    //    x,
-    //    y,
-    //    this.Bounds.Width,
-    //    this.Bounds.Height);
-
     $.Gtx1.fillStyle = this.Color;
     $.Gtx1.beginPath();
     $.Gtx1.arc(x, y, this.Bounds.Radius, 0, 2 * Math.PI);

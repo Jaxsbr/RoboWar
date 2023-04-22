@@ -131,7 +131,12 @@ $.right_collision = "right";
 $.Point = function (x, y) {
     this.X = x;
     this.Y = y;
-}
+;}
+
+$.Point.prototype.Set = function (x, y) {
+    this.X = x;
+    this.Y = y;
+};
 
 $.Point.prototype.Equals = function (point) {
     return this.X == point.X && this.Y == point.Y;
@@ -299,6 +304,14 @@ $.Rectangle = function(x, y, width, height) {
     this.Radius = this.Width >= this.Height ? this.Width / 2 : this.Height / 2;
     this.Update();
 }
+
+$.Rectangle.prototype.Set = function(x, y, w, h) {
+    this.X = x;
+    this.Y = y;
+    this.Width = w;
+    this.Height = h;
+    this.Update();
+};
 
 $.Rectangle.prototype.Copy = function () {
     var rect = new $.Rectangle(this.X, this.Y, this.Width, this.Height);
