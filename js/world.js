@@ -733,6 +733,8 @@ $.World.prototype.UpdateBullets = function () {
             // Friendly fire(enemy hit enemy)
             for (var e = 0; e < this.Enemies.length; e++) {
                 var enemy = this.Enemies[e];
+                if (!enemy.Alive) { continue; }
+
                 if (bullet.Bounds.IntersectRect(enemy.Bounds)) {
 
                     // Can't shoot it self.
@@ -754,6 +756,7 @@ $.World.prototype.UpdateBullets = function () {
         if (bullet.IsPlayer) {
             for (var e = 0; e < this.Enemies.length; e++) {
                 var enemy = this.Enemies[e];
+                if (!enemy.Alive) { continue; }
                 if (bullet.Bounds.IntersectRect(enemy.Bounds)) {
                     enemy.BulletHit(this.GetBulletDamage("bullet"));
 

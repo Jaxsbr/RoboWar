@@ -330,6 +330,8 @@ $.Enemy.prototype.SpreadBomb = function () {
 
 
 $.Enemy.prototype.Update = function () {
+    if (!this.Alive) { return; }
+
     this.Bounds.Update();
     this.Target = this.GameWorld.Hero.Bounds.Centre;
 
