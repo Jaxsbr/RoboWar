@@ -28,8 +28,10 @@ $.WaveEngine.prototype.UpdatePending = function () {
 };
 
 $.WaveEngine.prototype.UpdateBusy = function () {
+    var livingEnemyCount = this.GameWorld.Enemies.filter(enemy => enemy.Alive);
+
     if (this.GameWorld.SpawnedEnemies == this.GameWorld.SpawnCount &&
-        this.GameWorld.Enemies.length <= 0) {
+        livingEnemyCount <= 0) {
         this.States.Pending = 1;
         this.States.Busy = 0;
     }

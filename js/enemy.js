@@ -1,7 +1,12 @@
-$.Enemy = function (x, y, gameWorld, enemyType, bossValue) {
+$.Enemy = function (gameWorld) {
     this.GameWorld = gameWorld;
-    this.EnemyType = enemyType;
+    this.KilledSound = new $.Sound('sounds/shoot.mp3', 1);
+    this.MeleeSound = new $.Sound('sounds/melee2.mp3', 1);
+};
 
+
+$.Enemy.prototype.CalculateAttributes = function (x, y, enemyType, bossValue) {
+    this.EnemyType = enemyType;
     this.Velocity = new $.Point(0, 0);
     this.DesiredVelocity = new $.Point(0, 0);
     this.MaxCollisionForce = 2;
@@ -13,17 +18,6 @@ $.Enemy = function (x, y, gameWorld, enemyType, bossValue) {
     this.MaxSteerForce = 0.8;
     this.BossValue = bossValue ? bossValue : 0;
 
-    this.CalculateAttributes(x, y);
-    this.SetupAnimations();
-    this.SetupStates();
-    this.ToggleState(this.StateMoving);
-
-    this.KilledSound = new $.Sound('sounds/shoot.mp3', 1);
-    this.MeleeSound = new $.Sound('sounds/melee2.mp3', 1);
-};
-
-
-$.Enemy.prototype.CalculateAttributes = function (x, y) {
     switch (this.EnemyType) {
         case $.EnemyTypeNormal:
             this.Enemy1ShootSpeed = 650;
@@ -75,6 +69,9 @@ $.Enemy.prototype.CalculateAttributes = function (x, y) {
     }
 
     this.MaxSpeed = new $.Point(this.Speed, this.Speed);
+    this.SetupAnimations();
+    this.SetupStates();
+    this.ToggleState(this.StateMoving);
 };
 
 $.Enemy.prototype.BulletHit = function (damageResult) {
@@ -577,6 +574,8 @@ $.Enemy.prototype.UpdateCurrentTile = function () {
 
 $.Enemy.prototype.Draw = function () {
     if (!this.GameWorld.RenderBounds.ContainsRect(this.Bounds)) { return; }
+    if (!this.Alive) { return; }
+
 
     this.DrawBody();
     this.DrawHP();

@@ -475,6 +475,8 @@ $.World.prototype.GetClosesInRangeEnemy = function (point, range) {
 
     for (var i = 0; i < this.Enemies.length; i++) {
         var currentEnemy = this.Enemies[i];
+        if (!currentEnemy.Alive) { continue; }
+
         var distance = point.DistanceBetween(currentEnemy.Bounds.Centre);
 
         if (closestDistance == null) {
@@ -644,19 +646,34 @@ $.World.prototype.UpdateSpawner = function () {
         if (this.HeroProximitySpawnPoint.Y < 0) { this.HeroProximitySpawnPoint.Y = 0; }
         if (this.HeroProximitySpawnPoint.Y > this.Map.Height - enemyHeight) { this.HeroProximitySpawnPoint.Y = this.Map.Height - enemyHeight; }
         
-        this.Enemies.push(new $.Enemy(this.HeroProximitySpawnPoint.X, this.HeroProximitySpawnPoint.Y, this, enemyType, bossValue));
-
+        this.SpawnEnemy(this.HeroProximitySpawnPoint.X, this.HeroProximitySpawnPoint.Y, enemyType, bossValue);
         this.SpawnedEnemies++;
     }
 };
+
+$.World.prototype.SpawnEnemy = function (x, y, enemyType, bossValue) {
+    for (var i = 0; i < this.Enemies.length; i++) {
+        var enemy = this.Enemies[i];
+        if (!enemy.Alive) {
+            enemy.CalculateAttributes(x, y, enemyType, bossValue);
+            return enemy;
+        }
+    }
+
+    var newEnemy = new $.Enemy(this);
+    newEnemy.CalculateAttributes(
+        this.HeroProximitySpawnPoint.X, 
+        this.HeroProximitySpawnPoint.Y, 
+        enemyType, 
+        bossValue);
+    this.Enemies.push(newEnemy);
+}
 
 $.World.prototype.UpdateEnemies = function () {
     for (var i = 0; i < this.Enemies.length; i++) {
         var enemy = this.Enemies[i];
 
-        // Check if enemy is dead
         if (!enemy.Alive) {
-            this.Enemies.splice(i, 1);
             continue;
         }
                 
@@ -665,7 +682,7 @@ $.World.prototype.UpdateEnemies = function () {
         var nearestDistance = 0;
 
         for (var x = 0; x < this.Enemies.length; x++) {
-            if (x == i) { continue; }
+            if (x == i || !this.Enemies[x].Alive) { continue; }
 
             var distance = this.Enemies[x].Bounds.Centre.DistanceBetween(enemy.Bounds.Centre);
 
@@ -1003,6 +1020,7 @@ $.World.prototype.DrawMiniMap = function () {
     // Enemies
     for (var i = 0; i < this.Enemies.length; i++) {
         var enemy = this.Enemies[i];
+        if (!enemy.Alive) { continue; }
 
         px = this.MiniMapRect.X + enemy.Bounds.Centre.X / this.MiniDivider;
         py = this.MiniMapRect.Y + enemy.Bounds.Centre.Y / this.MiniDivider;
