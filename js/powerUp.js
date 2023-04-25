@@ -1,4 +1,6 @@
-$.PowerUp = function (x, y, type) {
+$.PowerUp = function () {};
+
+$.PowerUp.prototype.Reset = function (x, y, type) {
     this.Bounds = new $.Rectangle(x, y, 128, 128);
     this.PowerUpType = type;
     this.PulseOpacity = 0.3;
@@ -6,7 +8,6 @@ $.PowerUp = function (x, y, type) {
     this.SetupAttributes();
     this.SetupAnimations();
 };
-
 
 $.PowerUp.prototype.SetupAttributes = function () {
     switch (this.PowerUpType) {        
@@ -70,6 +71,8 @@ $.PowerUp.prototype.SetupAnimations = function () {
 
 
 $.PowerUp.prototype.Update = function () {
+    if (this.TTL <= 0) { return; }
+
     this.Bounds.Update();
     this.TTL -= $.Delta;
     this.UpdatePulse();
@@ -78,18 +81,6 @@ $.PowerUp.prototype.Update = function () {
 };
 
 $.PowerUp.prototype.UpdatePulse = function () {
-    //this.PulseValue = this.PulseDirection == 0 ? this.PulseValue + $.Delta : this.PulseValue - $.Delta
-    //if (this.PulseDirection == 0 && this.PulseValue >= this.PulseMax) {
-    //    this.PulseDirection = 1;
-    //}
-    //else if (this.PulseDirection == 1 && this.PulseValue <= 0) {
-    //    this.PulseDirection = 0;
-    //}
-
-    //this.PulseOpacity = this.PulseValue / this.PulseMax;
-    //if (this.PulseOpacity > 1) { this.PulseOpacity = 1; }
-    //if (this.PulseOpacity < 0) { this.PulseOpacity = 0; }
-
     var percent = Math.round(this.TTL * 100 / this.MaxTTL);
     if (percent <= 10) { this.PulseOpacity = percent / 10; }
 };
@@ -97,6 +88,7 @@ $.PowerUp.prototype.UpdatePulse = function () {
 
 $.PowerUp.prototype.Draw = function () {
     if (!$.GameWorld.RenderBounds.ContainsRect(this.Bounds)) { return; }
+    if (this.TTL <= 0) { return; }
 
     var x = this.Bounds.X - $.CanvasBounds.X;
     var y = this.Bounds.Y - $.CanvasBounds.Y;

@@ -397,8 +397,17 @@ $.World.prototype.AddShake = function (level) {
 }
 
 $.World.prototype.AddText = function (color, text, point, font) {
-    var combatText = new $.CombatText(color, text, point, font);
-    this.CombatTexts.push(combatText);
+    for (var i = 0; i < this.CombatTexts.length; i++) {
+        var combatText = this.CombatTexts[i];
+        if (this.CombatTexts[i].TTL <= 0) {
+            combatText.Reset(color, text, point, font);
+            return;
+        }
+    }
+
+    var newCombatText = new $.CombatText();
+    newCombatText.Reset(color, text, point, font);
+    this.CombatTexts.push(newCombatText);
 };
 
 $.World.prototype.GetBulletDamage = function (type) {
@@ -795,7 +804,6 @@ $.World.prototype.UpdateCombatText = function () {
     for (var i = 0; i < this.CombatTexts.length; i++) {
         var text = this.CombatTexts[i];
         if (text.TTL <= 0) {
-            this.CombatTexts.splice(i, 1);
             continue;
         }
 
@@ -825,17 +833,12 @@ $.World.prototype.UpdateShake = function () {
 $.World.prototype.UpdatePowerUps = function () {
     for (var i = 0; i < this.PowerUps.length; i++) {
         var powerUp = this.PowerUps[i];
-
-        // Check expire
-        if (powerUp.TTL <= 0) {
-            this.PowerUps.splice(i, 1);
-            continue;
-        }
+        if (powerUp.TTL <= 0) { continue; }
 
         // Check player collision
         if (powerUp.Bounds.IntersectRect(this.Hero.Bounds)) {
             this.Hero.CollectPowerUp(powerUp);
-            this.PowerUps.splice(i, 1);
+            powerUp.TTL = 0;
             continue;
         }
 
@@ -862,9 +865,7 @@ $.World.prototype.UpdatePowerUps = function () {
 
         var x = $.RandomBetween(0, this.Map.Width - 25);
         var y = $.RandomBetween(0, this.Map.Height - 25);
-
-        var powerUp = new $.PowerUp(x, y, powerUpType);
-        this.PowerUps.push(powerUp);
+        this.SpawnPowerUp(x, y, powerUpType);
 
         // Chance to spawn additional hp
         if (spawnHP) {            
@@ -872,14 +873,25 @@ $.World.prototype.UpdatePowerUps = function () {
             if (random > 5) {
                 x = $.RandomBetween(0, this.Map.Width - 25);
                 y = $.RandomBetween(0, this.Map.Height - 25);
-
-                powerUp = new $.PowerUp(x, y, $.PowerUpTypeHP);
-                this.PowerUps.push(powerUp);
+                this.SpawnPowerUp(x, y, $.PowerUpTypeHP);
             }
         }
     }
 };
 
+$.World.prototype.SpawnPowerUp = function (x, y, type) {
+    for (var i = 0; i < this.PowerUps.length; i++) {
+        var powerUp = this.PowerUps[i];
+        if (!powerUp.TTL <= 0) {
+            powerUp.Reset(x, y, type);
+            return;
+        }
+    }
+
+    var newPowerUp = new $.PowerUp();
+    newPowerUp.Reset(x, y, type);
+    this.PowerUps.push(newPowerUp);
+};
 
 // Draw Functions
 $.World.prototype.Draw = function () {
@@ -1035,6 +1047,8 @@ $.World.prototype.DrawMiniMap = function () {
     // Power ups
     for (var i = 0; i < this.PowerUps.length; i++) {
         var powerUp = this.PowerUps[i];
+        if (powerUp.TTL <= 0) { continue; }
+
         px = this.MiniMapRect.X + powerUp.Bounds.Centre.X / this.MiniDivider;
         py = this.MiniMapRect.Y + powerUp.Bounds.Centre.Y / this.MiniDivider;
 
