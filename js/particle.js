@@ -1,7 +1,20 @@
-$.Particle = function (x, y, color, direction, ttl, speed, w, h) {
-    this.Bounds = new $.Rectangle(x, y, w, h);
-    this.Color = color;
-    this.Velocity = new $.Point(0, 0);
+$.Particle = function() { };
+
+
+$.Particle.prototype.Reset = function (x, y, color, direction, ttl, speed, w, h) {
+    if (this.Bounds) {
+        this.Bounds.Set(x, y, w, h);
+    } else {
+        this.Bounds = new $.Rectangle(x, y, w, h);
+    }    
+
+    if (this.Velocity) {
+        this.Velocity.Set(0, 0);
+    } else {
+        this.Velocity = new $.Point(0, 0);
+    }    
+
+    this.Color = color;    
     this.Direction = direction;
     this.Opacity = 1;
     this.Speed = speed;
@@ -9,7 +22,6 @@ $.Particle = function (x, y, color, direction, ttl, speed, w, h) {
     this.TTL = this.MaxTTL;
     this.Image = null;
 };
-
 
 $.Particle.prototype.Update = function () {
     this.Bounds.Update();

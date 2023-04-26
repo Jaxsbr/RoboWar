@@ -40,8 +40,6 @@ $.Tile.prototype.Draw = function () {
     $.Gtx.fillStyle = this.Color;
     $.Gtx.fillRect(x, y, this.Bounds.Width, this.Bounds.Height);
 
-    $.Gtx.save();
-    $.Gtx.globalAlpha = 0.4;    
     $.Gtx.drawImage(
         $.TilesImage,
         this.ImageSourceRect.X,
@@ -52,5 +50,4 @@ $.Tile.prototype.Draw = function () {
         y,
         this.Bounds.Width,
         this.Bounds.Height);
-    $.Gtx.restore();
 };

@@ -229,24 +229,30 @@ $.World.prototype.AddParticle = function (
     for (var i = 0; i < this.Particles.length; i++) {        
         if (this.Particles[i].TTL <= 0) {
             var par = this.Particles[i];
-            par.Bounds.Set(
+            par.Reset(
                 particlePointX,
                 particlePointY,
+                color,
+                direction,
+                ttl,
+                speed,
                 particleSizeWidth,
                 particleSizeHeight);
-            par.Color = color;
-            par.Velocity.Set(0, 0);
-            par.Direction = direction;
-            par.Opacity = 1;
-            par.MaxTTL = ttl;
-            par.TTL = par.MaxTTL;
             par.Image = image;
-            break;
+            return;
         }
     }
 
-    var newParticle = new $.Particle(
-        particlePointX, particlePointY, color, direction, ttl, speed, particleSizeWidth, particleSizeHeight);
+    var newParticle = new $.Particle();
+    newParticle.Reset(
+        particlePointX, 
+        particlePointY, 
+        color, 
+        direction, 
+        ttl, 
+        speed, 
+        particleSizeWidth, 
+        particleSizeHeight);
     newParticle.Image = image;
     this.Particles.push(newParticle);
 };
@@ -950,11 +956,16 @@ $.World.prototype.DrawTiles = function () {
     if (!this.DoTileDraw) { return; }
     $.Gtx.clearRect(0, 0, $.CanvasWidth, $.CanvasHeight);
 
+    $.Gtx.save();
+    $.Gtx.globalAlpha = 0.5;    
+
     for (var col = 0; col < this.TileCols; col++) {
         for (var row = 0; row < this.TileRows; row++) {
             this.Tiles[col][row].Draw();
         }
     }
+
+    $.Gtx.restore();
 
     this.DoTileDraw = false;
 };
