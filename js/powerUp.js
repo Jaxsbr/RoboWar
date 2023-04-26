@@ -1,7 +1,13 @@
 $.PowerUp = function () {};
 
 $.PowerUp.prototype.Reset = function (x, y, type) {
-    this.Bounds = new $.Rectangle(x, y, 128, 128);
+
+    if (this.Bounds) {
+        this.Bounds.Set(x, y, 128, 128);
+    } else {
+        this.Bounds = new $.Rectangle(x, y, 128, 128);
+    }    
+
     this.PowerUpType = type;
     this.PulseOpacity = 0.3;
 

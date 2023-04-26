@@ -7,8 +7,8 @@ $.Enemy = function (gameWorld) {
 
 $.Enemy.prototype.CalculateAttributes = function (x, y, enemyType, bossValue) {
     this.EnemyType = enemyType;
-    this.Velocity = new $.Point(0, 0);
-    this.DesiredVelocity = new $.Point(0, 0);
+    this.SetVelocity(0, 0);
+    this.SetDesiredVelocity(0, 0);    
     this.MaxCollisionForce = 2;
     this.Alive = true;
     this.Target = null;
@@ -23,7 +23,7 @@ $.Enemy.prototype.CalculateAttributes = function (x, y, enemyType, bossValue) {
             this.Enemy1ShootSpeed = 650;
             this.Enemy1MinSpeed = 150;
             this.Enemy1MaxSpeed = 180;
-            this.Bounds = new $.Rectangle(x, y, 100, 100);
+            this.SetBounds(x, y, 100, 100);
             this.Speed = Math.floor($.RandomBetween(this.Enemy1MinSpeed, this.Enemy1MaxSpeed));
             this.MaxHP = 12;
             this.HP = this.MaxHP;
@@ -38,7 +38,7 @@ $.Enemy.prototype.CalculateAttributes = function (x, y, enemyType, bossValue) {
             this.Enemy2ShootSpeed = 1000;
             this.Enemy2MinSpeed = 250;
             this.Enemy2MaxSpeed = 270;
-            this.Bounds = new $.Rectangle(x, y, 75, 75);
+            this.SetBounds(x, y, 75, 75);
             this.Speed = Math.floor($.RandomBetween(this.Enemy2MinSpeed, this.Enemy2MaxSpeed));
             this.MaxHP = 25;
             this.HP = this.MaxHP;
@@ -52,7 +52,7 @@ $.Enemy.prototype.CalculateAttributes = function (x, y, enemyType, bossValue) {
         case $.EnemyTypeBoss:
             this.Enemy3ShootSpeed = 750;
             this.Enemy3SpreadBombSpeed = 500;
-            this.Bounds = new $.Rectangle(x, y, 115, 115);
+            this.SetBounds(x, y, 115, 115);
             this.Speed = Math.floor($.RandomBetween(160, 180));
             this.MaxHP = 200 + (this.BossValue * 20);
             this.HP = this.MaxHP;
@@ -72,6 +72,30 @@ $.Enemy.prototype.CalculateAttributes = function (x, y, enemyType, bossValue) {
     this.SetupAnimations();
     this.SetupStates();
     this.ToggleState(this.StateMoving);
+};
+
+$.Enemy.prototype.SetVelocity = function(x, y) {
+    if (this.Velocity) {
+        this.Velocity.Set(x, y);
+    } else {
+        this.Velocity = new $.Point(x, y);
+    }
+}
+
+$.Enemy.prototype.SetDesiredVelocity = function(x, y) {
+    if (this.DesiredVelocity) {
+        this.DesiredVelocity.Set(x, y);
+    } else {
+        this.DesiredVelocity = new $.Point(x, y);
+    }
+}
+
+$.Enemy.prototype.SetBounds = function (x, y, w, h) {
+    if (this.Bounds) {
+        this.Bounds.Set(x, y, w, h);
+    } else {
+        this.Bounds = new $.Rectangle(x, y, w, h);
+    }  
 };
 
 $.Enemy.prototype.BulletHit = function (damageResult) {
